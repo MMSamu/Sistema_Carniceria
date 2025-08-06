@@ -9,8 +9,6 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.stage.Stage;
 
-import mx.uam.ayd.proyecto.datos.GrupoRepository;
-import mx.uam.ayd.proyecto.negocio.modelo.Grupo;
 import mx.uam.ayd.proyecto.presentacion.principal.ControlPrincipal;
 
 /**
@@ -26,12 +24,10 @@ import mx.uam.ayd.proyecto.presentacion.principal.ControlPrincipal;
 public class ProyectoApplication {
 
 	private final ControlPrincipal controlPrincipal;
-	private final GrupoRepository grupoRepository;
 	
 	@Autowired
-	public ProyectoApplication(ControlPrincipal controlPrincipal, GrupoRepository grupoRepository) {
+	public ProyectoApplication(ControlPrincipal controlPrincipal) {
 		this.controlPrincipal = controlPrincipal;
-		this.grupoRepository = grupoRepository;
 	}
 
 	/**
@@ -82,9 +78,7 @@ public class ProyectoApplication {
 		inicializaBD();
 		
 		// Make sure controllers are created on JavaFX thread
-		Platform.runLater(() -> {
-			controlPrincipal.inicia();
-		});
+		Platform.runLater(controlPrincipal::inicia);
 	}
 	
 	/**
@@ -92,12 +86,5 @@ public class ProyectoApplication {
 	 */
 	public void inicializaBD() {
 		// Vamos a crear los dos grupos de usuarios
-		Grupo grupoAdmin = new Grupo();
-		grupoAdmin.setNombre("Administradores");
-		grupoRepository.save(grupoAdmin);
-		
-		Grupo grupoOps = new Grupo();
-		grupoOps.setNombre("Operadores");
-		grupoRepository.save(grupoOps);
 	}
 }
