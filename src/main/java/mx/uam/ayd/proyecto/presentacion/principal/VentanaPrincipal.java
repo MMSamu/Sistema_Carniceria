@@ -48,7 +48,6 @@ public class VentanaPrincipal {
 			
 			// Load FXML
 			FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/ventana-principal.fxml"));
-			loader.setController(this);
 			Scene scene = new Scene(loader.load(), 450, 300);
 			stage.setScene(scene);
 			
@@ -63,9 +62,8 @@ public class VentanaPrincipal {
 	}
 	/**
 	 * Muestra la ventana y establece el control
-	 * 
-	 * @param control El controlador asociado a esta ventana
-	 */
+	 *
+     */
 	public void muestra() {
 		//this.control = control;
 		
@@ -77,27 +75,13 @@ public class VentanaPrincipal {
 		initializeUI();
 		stage.show();
 	}
-	
-	// FXML Event Handlers
-	
+
 	@FXML
-	private void handleAgregarUsuario() {
+	private void handleAsignarMetodoEntrega() {
+
 		if (control != null) {
-			control.agregarUsuario();
-		}
-	}
-	
-	@FXML
-	private void handleListarUsuarios() {
-		if (control != null) {
-			control.listarUsuarios();
-		}
-	}
-	
-	@FXML
-	private void handleListarGrupos() {
-		if (control != null) {
-			control.listarGrupos();
+
+			control.asignarMetodoEntrega();
 		}
 	}
 }

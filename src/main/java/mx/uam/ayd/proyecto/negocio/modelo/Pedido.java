@@ -29,6 +29,7 @@ public class Pedido {
     private String estadoEntrega;
     private String observaciones;
     private Double total;
+    private Long id;
 
     /**
      * Cliente que realizó este pedido.
@@ -134,5 +135,9 @@ public class Pedido {
 
         this.estadoEntrega = nuevoEstado;
 
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

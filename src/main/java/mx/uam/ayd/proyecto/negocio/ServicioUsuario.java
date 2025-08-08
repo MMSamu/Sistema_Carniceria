@@ -34,7 +34,7 @@ public class ServicioUsuario {
 	 * 
 	 * @param nombre nombre del usuario
 	 * @param apellido apellido del usuario
-	 * @param grupo nombre grupo al que debe pertencer
+	 * @param nombre grupo al que debe pertencer
 	 * @return el usuario que se agregó
 	 * @throws IllegalArgumentException si el usuario ya existe, no existe el grupo,
 	 *         o si alguno de los parámetros es nulo o vacío

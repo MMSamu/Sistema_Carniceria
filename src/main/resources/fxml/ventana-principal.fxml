@@ -4,9 +4,13 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.geometry.Insets?>
 
-<VBox xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" 
+<VBox xmlns="http://javafx.com/javafx/11.0.1"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="mx.uam.ayd.proyecto.presentacion.principal.VentanaPrincipal"
       spacing="10" style="-fx-padding: 15px;">
-    
+
     <Label text="Mi Aplicación" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
-    
-</VBox> 
+
+    <Button text="Asignar método de entrega" onAction="#handleAsignarMetodoEntrega"/>
+
+</VBox>
