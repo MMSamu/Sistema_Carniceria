@@ -28,6 +28,7 @@ public class Cliente {
 
     /**
      * Metodo para mostrar el nombre completo del cliente.
+     * 
      * @return nombre y apellido
      */
 
@@ -39,6 +40,7 @@ public class Cliente {
 
     /**
      * Verifica si el cliente tiene datos de contacto válidos.
+     * 
      * @return true si el teléfono y el email están presentes
      */
 

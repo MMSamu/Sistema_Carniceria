@@ -9,7 +9,8 @@ import java.time.LocalDate;
 
 /**
  * Representa un pago realizado por un cliente para un pedido.
- * Contiene información sobre el tipo de pago, el monto, la fecha y su estado de confirmación.
+ * Contiene información sobre el tipo de pago, el monto, la fecha y su estado de
+ * confirmación.
  */
 
 @Entity
@@ -27,7 +28,9 @@ public class Pago {
     private float monto;
     private LocalDate fechaPago;
     private String estado; // "Pendiente", "Confirmado"
-    private Cliente cliente; //
+    @ManyToOne
+    @JoinColumn(name = "id_cliente")
+    private Cliente cliente;
 
     /**
      * Marca el pago como confirmado.
@@ -41,6 +44,7 @@ public class Pago {
 
     /**
      * Genera un recibo textual del pago.
+     * 
      * @return Cadena con la información del recibo.
      */
 

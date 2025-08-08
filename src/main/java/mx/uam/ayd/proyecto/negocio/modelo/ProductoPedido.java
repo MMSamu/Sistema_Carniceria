@@ -7,7 +7,8 @@ import lombok.Setter;
 
 /**
  * Representa un producto que ha sido solicitado como parte de un pedido.
- * Contiene la información necesaria para identificar el producto, su precio, peso y su disponibilidad al momento de procesar el pedido.
+ * Contiene la información necesaria para identificar el producto, su precio,
+ * peso y su disponibilidad al momento de procesar el pedido.
  */
 @Entity
 @Getter
@@ -27,6 +28,7 @@ public class ProductoPedido {
 
     /**
      * Actualiza el precio del producto en el pedido.
+     * 
      * @param nuevoPrecio nuevo precio a establecer
      */
     public void actualizarPrecio(float nuevoPrecio) {
@@ -35,6 +37,7 @@ public class ProductoPedido {
 
     /**
      * Verifica si el producto está disponible para ser agregado al pedido.
+     * 
      * @return true si el producto está disponible, false en caso contrario
      */
     public boolean verificarDisponibilidad() {
@@ -43,25 +46,27 @@ public class ProductoPedido {
 
     /**
      * Calcula el subtotal de este producto (precio × peso)
+     * 
      * @return subtotal del producto
      */
     public float calcularSubtotal() {
         return precio * peso;
     }
 
-    public void setPeso(float nuevoPeso) {
-        throw new UnsupportedOperationException("Not supported yet.");
+    public void setPeso(float peso) {
+        this.peso = peso;
     }
-public String getNombre() {
-    return this.nombre;
-}
 
-public float getPeso() {
-    return this.peso;
-}
+    public String getNombre() {
+        return this.nombre;
+    }
 
-public float getPrecio() {
-    return this.precio;
-}
+    public float getPeso() {
+        return this.peso;
+    }
+
+    public float getPrecio() {
+        return this.precio;
+    }
 
 }
