@@ -18,28 +18,30 @@ public class PagoService {
     private PagoRepository pagoRepository;
 
     @Autowired
-    private ClienteService clienteService;  // Inyectamos ClienteService
+    private ClienteService clienteService; // Inyectamos ClienteService
 
     /**
      * Registra un pago y el cliente en el sistema.
-     * @param nombre El nombre del cliente.
-     * @param apellido El apellido del cliente.
-     * @param telefono El teléfono del cliente.
+     * 
+     * @param nombre     El nombre del cliente.
+     * @param apellido   El apellido del cliente.
+     * @param telefono   El teléfono del cliente.
      * @param metodoPago El método de pago seleccionado (efectivo, tarjeta).
-     * @return true si el pago fue registrado exitosamente, false si ocurrió un error.
+     * @return true si el pago fue registrado exitosamente, false si ocurrió un
+     *         error.
      */
-
 
     public boolean registrarPago(String nombre, String apellido, String telefono, String metodoPago) {
         // primero, registrar al cliente usando ClienteService
-        Cliente cliente = clienteService.registrarCliente(nombre, apellido, telefono, metodoPago);  // Utilizamos ClienteService
+        Cliente cliente = clienteService.registrarCliente(nombre, apellido, telefono, metodoPago); // Utilizamos
+                                                                                                   // ClienteService
         if (cliente == null) {
             return false;
         }
 
         // Luego, creamos el objeto de pago
         Pago pago = new Pago();
-        pago.setCliente(cliente);  // Asociamos el cliente con el pago
+        pago.setCliente(cliente); // Asociamos el cliente con el pago
 
         // Guardamos el pago en la base de datos
         pagoRepository.save(pago);
@@ -81,6 +83,5 @@ public class PagoService {
         }
         return false;
     }
-
 
 }

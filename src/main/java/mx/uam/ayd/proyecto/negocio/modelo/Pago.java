@@ -28,13 +28,11 @@ public class Pago {
     private LocalDate fechaPago;
     private String estado; // "Pendiente", "Confirmado"
 
-    @ManyToOne
     private Cliente cliente; //
 
     /**
      * Marca el pago como confirmado.
      */
-
 
     public void confirmarPago() {
 
