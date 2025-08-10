@@ -32,6 +32,7 @@ public class ProductoPedido {
     private BigDecimal precioUnitario;
 
     /* Compatibilidad con UI del carrito */
+  
     private float peso;
 
     public String getNombre() {
@@ -44,8 +45,8 @@ public class ProductoPedido {
     public BigDecimal getPrecio() { return precioUnitario; }
 
     public BigDecimal calcularSubtotal() { return getSubtotal(); }
-    
-    /* ********************************************************** */
+  
+    /* ************************************************************* */
 
     public BigDecimal getSubtotal() {
         if (precioUnitario == null) return BigDecimal.ZERO;
@@ -90,4 +91,30 @@ public class ProductoPedido {
                 ", subtotal=" + getSubtotal() +
                 '}';
     }
+
+    // HELPERS PARA COMPATIBILIDAD CON TESTS
+
+    public void setNombre(String nombre) {
+        if (this.producto == null) {
+            this.producto = new Producto();
+        }
+        this.producto.setNombre(nombre);
+    }
+
+    /**
+     * Compatibilidad: algunos tests esperan setPrecio(int).
+     * Nuestro modelo usa BigDecimal 'precioUnitario'.
+     */
+    
+    public void setPrecio(int precio) {
+        this.precioUnitario = java.math.BigDecimal.valueOf(precio);
+    }
+
+    /** Sobrecarga opcional por si algún test usa BigDecimal explícito. */
+    
+    public void setPrecio(java.math.BigDecimal precio) {
+        this.precioUnitario = precio;
+    }
+
 }
+

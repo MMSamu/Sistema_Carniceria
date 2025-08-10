@@ -40,7 +40,7 @@ public class ProductoPedidoService {
         productoPedidoRepository.deleteById(id);
     }
 
-    /* Carrito en memoria (compat UI) */
+    /* ===================== Carrito en memoria (compat UI) ===================== */
 
     private final List<ProductoPedido> carrito = new ArrayList<>();
     private String nota;

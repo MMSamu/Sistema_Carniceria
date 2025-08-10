@@ -1,87 +1,57 @@
 package mx.uam.ayd.proyecto.negocio;
 
+import lombok.RequiredArgsConstructor;
 import mx.uam.ayd.proyecto.datos.PagoRepository;
 import mx.uam.ayd.proyecto.negocio.modelo.Pago;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import mx.uam.ayd.proyecto.negocio.modelo.Cliente;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 /**
- * Servicio para operaciones relacionadas con los pagos de los clientes.
+ * Servicio que contiene la lógica de negocio relacionada con los pagos.
  */
 @Service
+@RequiredArgsConstructor
 public class PagoService {
 
-    @Autowired
-    private PagoRepository pagoRepository;
-
-    @Autowired
-    private ClienteService clienteService; // Inyectamos ClienteService
+    private final PagoRepository pagoRepository;
 
     /**
-     * Registra un pago y el cliente en el sistema.
-     * 
-     * @param nombre     El nombre del cliente.
-     * @param apellido   El apellido del cliente.
-     * @param telefono   El teléfono del cliente.
-     * @param metodoPago El método de pago seleccionado (efectivo, tarjeta).
-     * @return true si el pago fue registrado exitosamente, false si ocurrió un
-     *         error.
+     * Registra un nuevo pago en el sistema.
+     * @param pago entidad Pago a registrar
+     * @return pago registrado
      */
-
-    public boolean registrarPago(String nombre, String apellido, String telefono, String metodoPago) {
-        // primero, registrar al cliente usando ClienteService
-        Cliente cliente = clienteService.registrarCliente(nombre, apellido, telefono, metodoPago); // Utilizamos
-                                                                                                   // ClienteService
-        if (cliente == null) {
-            return false;
-        }
-
-        // Luego, creamos el objeto de pago
-        Pago pago = new Pago();
-        pago.setCliente(cliente); // Asociamos el cliente con el pago
-
-        // Guardamos el pago en la base de datos
-        pagoRepository.save(pago);
-        return true;
+    public Pago registrarPago(Pago pago) {
+        return pagoRepository.save(pago);
     }
 
     /**
-     * Busca un pago por su identificador único.
-     *
-     * @param id el ID del pago a buscar
-     * @return un Optional con el pago si existe, vacío si no
+     * Obtiene un pago por su identificador.
+     * @param idPago identificador del pago
+     * @return el pago si existe
      */
-    public Optional<Pago> buscarPagoPorId(Long id) {
-        return pagoRepository.findById(id);
+    public Optional<Pago> obtenerPagoPorId(Long idPago) {
+        return pagoRepository.findById(idPago);
     }
 
     /**
-     * Devuelve todos los pagos registrados en el sistema.
-     *
-     * @return iterable con todos los pagos
+     * Iterable -> List para compatibilidad con CrudRepository.
+     * @return lista de pagos
      */
-    public Iterable<Pago> listarPagos() {
-        return pagoRepository.findAll();
+    public List<Pago> listarPagos() {
+        List<Pago> list = new ArrayList<>();
+        pagoRepository.findAll().forEach(list::add);
+        return list;
     }
 
     /**
-     * Confirma un pago si existe, cambiando su estado a "Confirmado".
-     *
-     * @param idPago el ID del pago a confirmar
-     * @return true si se confirmó, false si no se encontró
+     * Elimina un pago por su identificador.
+     * @param idPago identificador del pago
      */
-    public boolean confirmarPago(Long idPago) {
-        Optional<Pago> pagoOpt = pagoRepository.findById(idPago);
-        if (pagoOpt.isPresent()) {
-            Pago pago = pagoOpt.get();
-            pago.confirmarPago();
-            pagoRepository.save(pago);
-            return true;
-        }
-        return false;
+    public void eliminarPago(Long idPago) {
+        pagoRepository.deleteById(idPago);
     }
-
 }
+

@@ -1,31 +1,23 @@
 package mx.uam.ayd.proyecto.negocio.modelo;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
 import java.time.LocalDate;
+import java.util.List;
 
-/**
- * Entidades que representan un producto en el sistema de inventario.
- */
-
+/** Representa un producto disponible en el inventario de la carnicería. */
 @Entity
-@Getter
-@Setter
-@NoArgsConstructor
-
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor
 public class Producto {
 
     @Id
-    private int idInventario;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long idProducto;
 
-    private int cantidadDisponible;
-    private int stockMinimo;
-    private LocalDate fechaActualizacion;
-    // se requiere para la HU-1
+    // HU-1
+    
     private String nombre;
     private String descripcion;
     private double precio;
@@ -35,39 +27,30 @@ public class Producto {
     private boolean esMenudeo;
     private boolean esCongelado;
 
-    /**
-     * Actualiza el stock disponible del producto y la fecha de actualización.
-     */
-    public void actualizarStock(int nuevaCantidad) {
+    // Inventario
+    
+    private int cantidadDisponible;
+    private int stockMinimo;
+    private LocalDate fechaActualizacion;
 
+    @OneToMany(mappedBy = "producto", cascade = CascadeType.ALL)
+    private List<ProductoPedido> productosPedido;
+
+    public void actualizarStock(int nuevaCantidad) {
         this.cantidadDisponible = nuevaCantidad;
         this.fechaActualizacion = LocalDate.now();
-
     }
-
-    /**
-     * Verifica si hay suficiente stock disponible.
-     * @return true si la cantidad disponible es mayor o igual al stock mínimo, false en caso contrario.
-     */
 
     public boolean verificarDisponibilidad() {
-
         return cantidadDisponible >= stockMinimo;
-
     }
-
-    /**
-     * Genera un reporte sobre el estado del producto.
-     */
 
     public String generarReporte() {
-
-        return "ID Inventario: " + idInventario +
-                ", Cantidad disponible: " + cantidadDisponible +
-                ", Stock mínimo: " + stockMinimo +
-                ", Última actualización: " + fechaActualizacion;
-
+        return "Producto{id=" + idProducto +
+                ", nombre='" + nombre + '\'' +
+                ", cantidadDisponible=" + cantidadDisponible +
+                ", stockMinimo=" + stockMinimo +
+                ", ultimaActualizacion=" + fechaActualizacion +
+                '}';
     }
-
 }
-

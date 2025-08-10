@@ -1,61 +1,91 @@
 package mx.uam.ayd.proyecto.negocio.modelo;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Representa a un repartidor encargado de entregar pedidos a domicilio.
- * Contiene datos de contacto, estado de disponibilidad y vehículo asignado.
+ * Representa a un repartidor de la carnicería.
  */
-
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-
+@AllArgsConstructor
+@Builder
 public class Repartidor {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idRepartidor;
 
+    /** Nombre(s) del repartidor */
+    @Column(nullable = false)
     private String nombre;
+
+    /** Apellido(s) del repartidor */
+    @Column(nullable = false)
     private String apellido;
+
+    /** Teléfono de contacto */
     private String telefono;
-    private boolean disponible;
-    private String vehiculo;
 
-    /**
-     * Marca al repartidor como ocupado al tomar una entrega.
-     */
+    /** Fecha de ingreso */
+    private LocalDate fechaIngreso;
 
-    public void tomarEntrega() {
+    /** Estatus (activo/inactivo) */
+    @Builder.Default
+    private boolean activo = true;
 
-        this.disponible = false;
+    /** Lista de pedidos asignados a este repartidor */
+    @OneToMany(mappedBy = "repartidor", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Pedido> pedidos = new ArrayList<>();
 
+    /* Métodos de dominio */
+
+    /** Nombre completo para UI o reportes. */
+    public String getNombreCompleto() {
+        String n = nombre != null ? nombre : "";
+        String a = apellido != null ? apellido : "";
+        return (n + " " + a).trim();
     }
 
-    /**
-     * Marca al repartidor como disponible después de completar una entrega.
-     */
-
-    public void completarEntrega() {
-
-        this.disponible = true;
-
+    /** Activa o inactiva al repartidor. */
+    public void marcarActivo(boolean nuevoEstado) {
+        this.activo = nuevoEstado;
     }
 
-    /**
-     * Reporta el vehículo con el que realiza la entrega.
-     * @return descripción textual del vehículo
-     */
-
-    public String reportarUbicacion() {
-
-        return "Repartidor " + nombre + " en vehículo: " + vehiculo;
-
+    /** Asigna un pedido y ajusta relación bidireccional. */
+    public void asignarPedido(Pedido pedido) {
+        if (pedido == null) return;
+        pedidos.add(pedido);
+        pedido.setRepartidor(this);
     }
 
+    /** Elimina un pedido asignado y ajusta relación bidireccional. */
+    public void quitarPedido(Pedido pedido) {
+        if (pedido == null) return;
+        pedidos.remove(pedido);
+        if (pedido.getRepartidor() == this) {
+            pedido.setRepartidor(null);
+        }
+    }
+
+    /** Verifica si el repartidor está disponible (activo y sin pedidos asignados). */
+    public boolean disponible() {
+        return activo && (pedidos == null || pedidos.isEmpty());
+    }
+
+    @Override
+    public String toString() {
+        return "Repartidor{id=" + idRepartidor +
+                ", nombreCompleto='" + getNombreCompleto() + '\'' +
+                ", activo=" + activo +
+                ", pedidosAsignados=" + (pedidos != null ? pedidos.size() : 0) +
+                '}';
+    }
 }
