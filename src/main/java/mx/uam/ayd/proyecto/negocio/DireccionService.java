@@ -1,5 +1,6 @@
 package mx.uam.ayd.proyecto.negocio;
 
+<<<<<<< HEAD
 import lombok.RequiredArgsConstructor;
 import mx.uam.ayd.proyecto.datos.DireccionRepository;
 import mx.uam.ayd.proyecto.negocio.modelo.Direccion;
@@ -56,3 +57,7 @@ public class DireccionService {
 
     }
 }
+=======
+public class DireccionService {
+}
+>>>>>>> 8ac433caaccbbc69b8eb84307c9754fb917738e1

@@ -1,19 +1,32 @@
 package mx.uam.ayd.proyecto.negocio.modelo;
 
 import jakarta.persistence.*;
+<<<<<<< HEAD
 import lombok.*;
 
 import java.util.List;
 
 /**
  * Representa a un empleado que puede procesar pedidos dentro del sistema.
+=======
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+/**
+ * Representa a un empleado del sistema.
+ * Puede procesar pedidos y atender clientes.
+>>>>>>> 8ac433caaccbbc69b8eb84307c9754fb917738e1
  */
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
+<<<<<<< HEAD
 @AllArgsConstructor
+=======
+>>>>>>> 8ac433caaccbbc69b8eb84307c9754fb917738e1
 
 public class Empleado {
 
@@ -23,6 +36,7 @@ public class Empleado {
 
     private String nombre;
     private String apellido;
+<<<<<<< HEAD
     private String rol;
     private String telefono;
 
@@ -38,12 +52,24 @@ public class Empleado {
      */
 
     public String getNombreCompleto() {
+=======
+    private String rol; // Ejemplo: "Cajero", "Almacén", "Administrador"
+    private String telefono;
+
+    /**
+     * Devuelve el nombre completo del empleado.
+     * @return nombre y apellido concatenados
+     */
+
+    public String nombreCompleto() {
+>>>>>>> 8ac433caaccbbc69b8eb84307c9754fb917738e1
 
         return nombre + " " + apellido;
 
     }
 
     /**
+<<<<<<< HEAD
      * Simula el procesamiento de un pedido.
      * @param pedido pedido a procesar
      */
@@ -66,4 +92,15 @@ public class Empleado {
 
     }
 
+=======
+     * Permite al empleado realizar tareas relacionadas con pedidos.
+     * Este metodo podría extenderse para registrar acciones.
+     */
+
+    public void procesarPedido(Long idPedido) {
+
+        System.out.println("Empleado " + nombreCompleto() + " procesó el pedido " + idPedido);
+
+    }
+>>>>>>> 8ac433caaccbbc69b8eb84307c9754fb917738e1
 }

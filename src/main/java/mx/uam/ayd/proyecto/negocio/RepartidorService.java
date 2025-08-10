@@ -1,5 +1,6 @@
 package mx.uam.ayd.proyecto.negocio;
 
+<<<<<<< HEAD
 import lombok.RequiredArgsConstructor;
 import mx.uam.ayd.proyecto.datos.RepartidorRepository;
 import mx.uam.ayd.proyecto.negocio.modelo.Repartidor;
@@ -55,3 +56,7 @@ public class RepartidorService {
         return (List<Repartidor>) repartidorRepository.findAll();
     }
 }
+=======
+public class RepartidorService {
+}
+>>>>>>> 8ac433caaccbbc69b8eb84307c9754fb917738e1

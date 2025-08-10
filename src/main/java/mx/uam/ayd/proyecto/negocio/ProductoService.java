@@ -1,5 +1,6 @@
 package mx.uam.ayd.proyecto.negocio;
 
+<<<<<<< HEAD
 import lombok.RequiredArgsConstructor;
 import mx.uam.ayd.proyecto.datos.ProductoRepository;
 import mx.uam.ayd.proyecto.negocio.modelo.Producto;
@@ -76,4 +77,7 @@ public class ProductoService {
         }
         return false;
     }
+=======
+public class ProductoService {
+>>>>>>> 8ac433caaccbbc69b8eb84307c9754fb917738e1
 }
