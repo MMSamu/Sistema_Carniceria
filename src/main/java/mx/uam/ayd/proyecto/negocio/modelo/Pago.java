@@ -1,105 +1,107 @@
 package mx.uam.ayd.proyecto.negocio.modelo;
 
 import jakarta.persistence.*;
-<<<<<<< HEAD
 import lombok.*;
-=======
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
->>>>>>> 8ac433caaccbbc69b8eb84307c9754fb917738e1
 
-import java.time.LocalDate;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 /**
-<<<<<<< HEAD
- * Representa el pago realizado para un pedido.
-=======
- * Representa un pago realizado por un cliente para un pedido.
- * Contiene información sobre el tipo de pago, el monto, la fecha y su estado de confirmación.
->>>>>>> 8ac433caaccbbc69b8eb84307c9754fb917738e1
+ * Representa un pago registrado en el sistema.
  */
-
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-<<<<<<< HEAD
 @AllArgsConstructor
-=======
->>>>>>> 8ac433caaccbbc69b8eb84307c9754fb917738e1
-
+@Builder
 public class Pago {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idPago;
 
-<<<<<<< HEAD
-    private String tipoPago;
-    private double monto;
-    private LocalDate fechaPago;
+    /** Importe del pago */
+    @Column(precision = 12, scale = 2, nullable = false)
+    private BigDecimal monto;
+
+    /** Fecha y hora en que se registró el pago */
+    @Column(nullable = false)
+    private LocalDateTime fechaPago;
+
+    /** Método de pago (Efectivo, Tarjeta, Transferencia, etc.) */
+    @Column(nullable = false)
+    private String metodoPago;
+
+    /** Referencia/folio del pago (opcional) */
+    private String referencia;
+
+    /** Estado del pago (Registrado, Confirmado, Cancelado, Reembolsado...) */
+    @Column(nullable = false)
     private String estado;
 
-    /**
-     * Pedido al que está asociado este pago.
-     */
+    /** Relación con el cliente que realizó el pago (opcional) */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idCliente")
+    private Cliente cliente;
 
-    @OneToOne
-    @JoinColumn(name = "id_pedido", nullable = false)
+    /** Relación con el pedido que se liquida (opcional) */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idPedido")
     private Pedido pedido;
 
-    /**
-     * Marca el pago como procesado.
-     */
+    /*  Métodos de dominio */
 
-    public void procesarPago() {
-
-        this.estado = "Procesado";
-        this.fechaPago = LocalDate.now();
-
+    /** Inicializa valores por defecto al crear el pago desde servicio/controlador. */
+    public void inicializarSiNecesario() {
+        if (this.fechaPago == null) this.fechaPago = LocalDateTime.now();
+        if (!notBlank(this.estado)) this.estado = "Registrado";
     }
-=======
-    private String tipoPago; // "Efectivo", "Tarjeta"
-    private float monto;
-    private LocalDate fechaPago;
-    private String estado; // "Pendiente", "Confirmado"
 
-    @ManyToOne
-    private Cliente cliente; //
->>>>>>> 8ac433caaccbbc69b8eb84307c9754fb917738e1
+    /** Valida que el monto sea positivo. */
+    public boolean montoValido() {
+        return monto != null && monto.compareTo(BigDecimal.ZERO) > 0;
+    }
 
-    /**
-     * Marca el pago como confirmado.
-     */
-
-    public void confirmarPago() {
-
+    /** Confirma el pago (ej. tras verificación de banco). */
+    public void confirmar() {
         this.estado = "Confirmado";
-
+        if (this.fechaPago == null) this.fechaPago = LocalDateTime.now();
     }
 
-    /**
-<<<<<<< HEAD
-     * Simula la generación de un recibo.
-     */
-
-    public void generarRecibo() {
-
-        // lógica futura
-
+    /** Cancela el pago con reglas simples. */
+    public void cancelar() {
+        this.estado = "Cancelado";
     }
 
+    /** Marca el pago como reembolsado. */
+    public void reembolsar() {
+        this.estado = "Reembolsado";
+    }
+
+    /** Aplica un descuento directo al monto (por ejemplo, cupones). */
+    public void aplicarDescuento(BigDecimal descuento) {
+        if (descuento == null || descuento.compareTo(BigDecimal.ZERO) <= 0) return;
+        if (this.monto == null) this.monto = BigDecimal.ZERO;
+        BigDecimal nuevo = this.monto.subtract(descuento);
+        this.monto = nuevo.compareTo(BigDecimal.ZERO) < 0 ? BigDecimal.ZERO : nuevo;
+    }
+
+    @Override
+    public String toString() {
+        return "Pago{id=" + idPago +
+                ", monto=" + monto +
+                ", fechaPago=" + fechaPago +
+                ", metodoPago='" + safe(metodoPago) + '\'' +
+                ", estado='" + safe(estado) + '\'' +
+                '}';
+    }
+
+    /* Helpers internos */
+  
+    /* Comprueba que la cadena no sea null ni esté vacía después de quitar espacios. */
+    private static boolean notBlank(String s) { return s != null && !s.isBlank(); }
+  
+    /* Devuelve el valor original sin null (en caso de null devuelve "" vacío). */ 
+    private static String safe(String s) { return s == null ? "" : s.trim(); }
 }
-=======
-     * Genera un recibo textual del pago.
-     * @return Cadena con la información del recibo.
-     */
-
-    public String generarRecibo() {
-
-        return "Pago #" + idPago + " de $" + monto + " realizado el " + fechaPago + " vía " + tipoPago;
-    }
-
-}
->>>>>>> 8ac433caaccbbc69b8eb84307c9754fb917738e1

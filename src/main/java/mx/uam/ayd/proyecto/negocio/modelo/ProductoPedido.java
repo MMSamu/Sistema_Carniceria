@@ -1,118 +1,92 @@
 package mx.uam.ayd.proyecto.negocio.modelo;
 
 import jakarta.persistence.*;
-<<<<<<< HEAD
 import lombok.*;
 
-/**
- * Representa un producto incluido dentro de un pedido, junto con su cantidad.
- */
-
-=======
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import java.math.BigDecimal;
 
 /**
- * Representa un producto que ha sido solicitado como parte de un pedido.
- * Contiene la información necesaria para identificar el producto, su precio,
- * peso y su disponibilidad al momento de procesar el pedido.
+ * Relación entre un Producto y un Pedido, con cantidad y precio unitario.
  */
->>>>>>> 8ac433caaccbbc69b8eb84307c9754fb917738e1
+
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-<<<<<<< HEAD
 @AllArgsConstructor
-=======
->>>>>>> 8ac433caaccbbc69b8eb84307c9754fb917738e1
+@Builder
 public class ProductoPedido {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-<<<<<<< HEAD
     private Long idProductoPedido;
 
-    private int cantidad;
-    private double precioUnitario;
-
-    /**
-     * Pedido al que pertenece este producto.
-     */
-
-    @ManyToOne
-    @JoinColumn(name = "id_pedido", nullable = false)
-    private Pedido pedido;
-
-    /**
-     * Producto base (del inventario) asociado al elemento del pedido.
-     */
-
-    @ManyToOne
-    @JoinColumn(name = "id_producto", nullable = false)
+    /** Producto asociado */
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "idProducto")
     private Producto producto;
 
-    /**
-     * Calcula el subtotal de productoPedido (precioUnitario * cantidad).
-     * @return subtotal
-     */
+    /** Pedido asociado */
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "idPedido")
+    private Pedido pedido;
 
-    public double getSubtotal() {
+    /** Cantidad solicitada del producto */
+    @Column(nullable = false)
+    private int cantidad;
 
-        return precioUnitario * cantidad;
+    /** Precio unitario aplicado en este renglón */
+    @Column(precision = 12, scale = 2, nullable = false)
+    private BigDecimal precioUnitario;
 
-=======
-    private int idProducto;
+    /* Métodos de dominio */
 
-    private String nombre;
-    private String descripcion;
-    private float precio;
-    private boolean disponible;
-    private float peso;
-
-    /**
-     * Actualiza el precio del producto en el pedido.
-     * 
-     * @param nuevoPrecio nuevo precio a establecer
-     */
-    public void actualizarPrecio(float nuevoPrecio) {
-        this.precio = nuevoPrecio;
+    /** Subtotal = cantidad * precioUnitario (nunca null). */
+    public BigDecimal getSubtotal() {
+        if (precioUnitario == null) return BigDecimal.ZERO;
+        return precioUnitario.multiply(BigDecimal.valueOf(Math.max(0, cantidad)));
     }
 
-    /**
-     * Verifica si el producto está disponible para ser agregado al pedido.
-     * 
-     * @return true si el producto está disponible, false en caso contrario
-     */
-    public boolean verificarDisponibilidad() {
-        return disponible;
+    /** Actualiza cantidad y mantiene el total del pedido coherente si está enlazado. */
+    public void actualizarCantidad(int nuevaCantidad) {
+        this.cantidad = Math.max(0, nuevaCantidad);
+        if (pedido != null) {
+            pedido.recalcularTotal();
+        }
     }
 
-    /**
-     * Calcula el subtotal de este producto (precio × peso)
-     * 
-     * @return subtotal del producto
-     */
-    public float calcularSubtotal() {
-        return precio * peso;
+    /** Cambia el precio unitario y recalcula el total del pedido si aplica. */
+    public void actualizarPrecioUnitario(BigDecimal nuevoPrecio) {
+        if (nuevoPrecio == null || nuevoPrecio.compareTo(BigDecimal.ZERO) < 0) return;
+        this.precioUnitario = nuevoPrecio;
+        if (pedido != null) {
+            pedido.recalcularTotal();
+        }
     }
 
-    public void setPeso(float peso) {
-        this.peso = peso;
+    /** Ajusta la relación bidireccional con Pedido. */
+    public void vincularPedido(Pedido p) {
+        this.pedido = p;
+        if (p != null && !p.getProductosPedido().contains(this)) {
+            p.getProductosPedido().add(this);
+        }
     }
 
-    public String getNombre() {
-        return this.nombre;
+    /** Ajusta la relación bidireccional con Producto. */
+    public void vincularProducto(Producto pr) {
+        this.producto = pr;
+        if (pr != null && (pr.getProductosPedido() != null) && !pr.getProductosPedido().contains(this)) {
+            pr.getProductosPedido().add(this);
+        }
     }
 
-    public float getPeso() {
-        return this.peso;
+    @Override
+    public String toString() {
+        return "ProductoPedido{id=" + idProductoPedido +
+                ", producto=" + (producto != null ? producto.getNombre() : "null") +
+                ", cantidad=" + cantidad +
+                ", precioUnitario=" + precioUnitario +
+                ", subtotal=" + getSubtotal() +
+                '}';
     }
-
-    public float getPrecio() {
-        return this.precio;
->>>>>>> 8ac433caaccbbc69b8eb84307c9754fb917738e1
-    }
-
 }

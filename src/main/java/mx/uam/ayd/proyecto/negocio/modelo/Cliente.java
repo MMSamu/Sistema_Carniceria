@@ -1,113 +1,94 @@
 package mx.uam.ayd.proyecto.negocio.modelo;
 
 import jakarta.persistence.*;
-<<<<<<< HEAD
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Representa a un cliente que puede realizar pedidos dentro del sistema.
-=======
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-/**
- * Representa a un cliente dentro del sistema.
- * Puede realizar pedidos y consultar su historial.
->>>>>>> 8ac433caaccbbc69b8eb84307c9754fb917738e1
+ * Representa un cliente en el sistema.
  */
-
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-<<<<<<< HEAD
 @AllArgsConstructor
-=======
->>>>>>> 8ac433caaccbbc69b8eb84307c9754fb917738e1
-
+@Builder
 public class Cliente {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idCliente;
 
+    /** Nombre(s) del cliente */
+    @Column(nullable = false)
     private String nombre;
+
+    /** Apellido(s) del cliente */
+    @Column(nullable = false)
     private String apellido;
+
+    /** Teléfono de contacto (opcional) */
     private String telefono;
+
+    /** Correo electrónico (opcional) */
     private String email;
 
     /**
-<<<<<<< HEAD
-     * Lista de pedidos realizados por este cliente.
+     * Relación 1..N con Direccion.
+     * - LAZY para no traer direcciones si no se necesitan.
+     * - Cascade PERSIST/MERGE para crear/actualizar junto con el cliente sin borrar en cascada.
      */
+  
+    @OneToMany(mappedBy = "cliente", fetch = FetchType.LAZY, cascade = { CascadeType.PERSIST, CascadeType.MERGE })
+    @Builder.Default
+    private List<Direccion> direcciones = new ArrayList<>();
 
-    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL)
-    private List<Pedido> pedidos;
+    /*  Métodos de dominio */
 
-    /**
-     * Método de utilidad para obtener el nombre completo del cliente.
-     * @return nombre y apellido concatenados
-     */
-
+    /** Nombre completo para UI/reportes. */
+  
     public String getNombreCompleto() {
-=======
-     * Metodo para mostrar el nombre completo del cliente.
-     * 
-     * @return nombre y apellido
-     */
-
-    public String nombreCompleto() {
->>>>>>> 8ac433caaccbbc69b8eb84307c9754fb917738e1
-
-        return nombre + " " + apellido;
-
+        String n = nombre != null ? nombre : "";
+        String a = apellido != null ? apellido : "";
+        return (n + " " + a).trim();
     }
 
-    /**
-<<<<<<< HEAD
-     * Simula el registro del cliente en el sistema.
-     */
-
-    public void registrarse() {
-
-        // lógica de registro (simulada)
-
+    /** Indica si existe al menos un dato de contacto. */
+  
+    public boolean tieneContacto() {
+        return (telefono != null && !telefono.isBlank()) || (email != null && !email.isBlank());
     }
 
-    /**
-     * Permite al cliente iniciar un nuevo pedido.
-     */
-
-    public void realizarPedido(Pedido pedido) {
-
-        pedidos.add(pedido);
-
+    /** Añade una dirección y asegura la consistencia del lado dueño. */
+  
+    public void agregarDireccion(Direccion dir) {
+        if (dir == null) return;
+        if (direcciones == null) direcciones = new ArrayList<>();
+        direcciones.add(dir);
+        dir.setCliente(this);
     }
 
-    /**
-     * Permite consultar el historial de pedidos.
-     */
-
-    public List<Pedido> consultarHistorial() {
-
-        return pedidos;
-
+    /** Quita una dirección actualizando ambas partes. */
+  
+    public void quitarDireccion(Direccion dir) {
+        if (dir == null || direcciones == null) return;
+        direcciones.remove(dir);
+        if (dir.getCliente() == this) {
+            dir.setCliente(null);
+        }
     }
 
-=======
-     * Verifica si el cliente tiene datos de contacto válidos.
-     * 
-     * @return true si el teléfono y el email están presentes
-     */
-
-    public boolean datosContactoCompletos() {
-
-        return telefono != null && !telefono.isBlank()
-                && email != null && !email.isBlank();
-
+    /** Actualiza datos de contacto de forma segura. */
+  
+    public void actualizarContacto(String nuevoTelefono, String nuevoEmail) {
+        if (nuevoTelefono != null && !nuevoTelefono.isBlank()) this.telefono = nuevoTelefono;
+        if (nuevoEmail != null && !nuevoEmail.isBlank()) this.email = nuevoEmail;
     }
->>>>>>> 8ac433caaccbbc69b8eb84307c9754fb917738e1
+
+    @Override
+    public String toString() {
+        return "Cliente{id=" + idCliente + ", nombreCompleto='" + getNombreCompleto() + "'}";
+    }
 }

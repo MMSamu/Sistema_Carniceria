@@ -1,196 +1,121 @@
 package mx.uam.ayd.proyecto.negocio.modelo;
 
 import jakarta.persistence.*;
-<<<<<<< HEAD
 import lombok.*;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
  * Representa un pedido realizado por un cliente.
-=======
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-/**
- * Representa a un repartidor encargado de entregar pedidos a domicilio.
- * Contiene datos de contacto, estado de disponibilidad y vehículo asignado.
->>>>>>> 8ac433caaccbbc69b8eb84307c9754fb917738e1
  */
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-<<<<<<< HEAD
 @AllArgsConstructor
-=======
->>>>>>> 8ac433caaccbbc69b8eb84307c9754fb917738e1
-
+@Builder
 public class Pedido {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-<<<<<<< HEAD
-
     private Long idPedido;
-    private LocalDate fecha;
-    private LocalTime hora;
-    private String tipoEntrega;
-    private String estadoEntrega;
-    private String observaciones;
-    private Double total;
-    private Long id;
 
-    /**
-     * Cliente que realizó este pedido.
-     */
-
-    @ManyToOne
-    @JoinColumn(name = "id_cliente", nullable = false)
+    /** Cliente que realiza el pedido */
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idCliente")
     private Cliente cliente;
 
-    /**
-     * Dirección asociada al pedido (en caso de entrega a domicilio).
-     */
+    /** Fecha y hora de creación del pedido */
+    @Column(nullable = false)
+    private LocalDateTime fechaCreacion;
 
-    @ManyToOne
-    @JoinColumn(name = "id_direccion")
-    private Direccion direccion;
+    /** Estado del pedido (Pendiente, En preparación, Enviado, Entregado, Cancelado) */
+    @Column(nullable = false)
+    private String estado;
 
-    /**
-     * Empleado que procesó este pedido (opcional).
-     */
+    /** Total del pedido */
+    @Column(precision = 12, scale = 2, nullable = false)
+    private BigDecimal total;
 
-    @ManyToOne
-    @JoinColumn(name = "id_empleado")
-    private Empleado empleado;
+    /** Relación con los productos que incluye el pedido */
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<ProductoPedido> productosPedido = new ArrayList<>();
 
-    /**
-     * Repartidor asignado para entregar el pedido (solo si aplica).
-     */
-
-    @ManyToOne
-    @JoinColumn(name = "id_repartidor")
-    private Repartidor repartidor;
-
-    /**
-     * Relación uno a uno con el pago de este pedido.
-     */
-
-    @OneToOne(mappedBy = "pedido", cascade = CascadeType.ALL)
+    /** Relación opcional con pago */
+    @OneToOne(mappedBy = "pedido", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private Pago pago;
 
-    /**
-     * Lista de productos incluidos en el pedido.
-     */
+    /* Métodos de dominio */
 
-    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL)
-    private List<ProductoPedido> productos;
-
-    /**
-     * Metodo para marcar el pedido como confirmado.
-     */
-
-    public void confirmar() {
-
-        this.estadoEntrega = "Confirmado";
-=======
-    private Long idRepartidor;
-
-    private String nombre;
-    private String apellido;
-    private String telefono;
-    private boolean disponible;
-    private String vehiculo;
-
-    /**
-     * Marca al repartidor como ocupado al tomar una entrega.
-     */
-
-    public void tomarEntrega() {
-
-        this.disponible = false;
->>>>>>> 8ac433caaccbbc69b8eb84307c9754fb917738e1
-
+    /** Inicializa campos por defecto si no se han asignado. */
+    public void inicializarSiNecesario() {
+        if (this.fechaCreacion == null) this.fechaCreacion = LocalDateTime.now();
+        if (!notBlank(this.estado)) this.estado = "Pendiente";
+        if (this.total == null) this.total = BigDecimal.ZERO;
     }
 
-    /**
-<<<<<<< HEAD
-     * Metodo que cancela el pedido.
-     */
-
-    public void cancelar() {
-
-        this.estadoEntrega = "Cancelado";
-=======
-     * Marca al repartidor como disponible después de completar una entrega.
-     */
-
-    public void completarEntrega() {
-
-        this.disponible = true;
->>>>>>> 8ac433caaccbbc69b8eb84307c9754fb917738e1
-
+    /** Agrega un producto al pedido y ajusta la relación bidireccional. */
+    public void agregarProductoPedido(ProductoPedido productoPedido) {
+        if (productoPedido == null) return;
+        productosPedido.add(productoPedido);
+        productoPedido.setPedido(this);
+        recalcularTotal();
     }
 
-    /**
-<<<<<<< HEAD
-     * Calcula el total sumando los precios de cada productoPedido.
-     */
-
-    public void calcularTotal() {
-
-        if (productos != null && !productos.isEmpty()) {
-            this.total = productos.stream()
-                    .mapToDouble(ProductoPedido::getSubtotal)
-                    .sum();
-
-        } else {
-
-            this.total = 0.0;
-
+    /** Elimina un producto del pedido y ajusta la relación bidireccional. */
+    public void eliminarProductoPedido(ProductoPedido productoPedido) {
+        if (productoPedido == null) return;
+        productosPedido.remove(productoPedido);
+        if (productoPedido.getPedido() == this) {
+            productoPedido.setPedido(null);
         }
-
+        recalcularTotal();
     }
 
-    /**
-     * Confirma que el pedido ha sido entregado.
-     */
-
-    public void confirmarEntrega() {
-
-        this.estadoEntrega = "Entregado";
-
+    /** Recalcula el total del pedido a partir de los productos. */
+    public void recalcularTotal() {
+        this.total = productosPedido.stream()
+                .map(ProductoPedido::getSubtotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    /**
-     * Actualiza el estado del pedido.
-     * @param nuevoEstado nuevo estado deseado
-     */
-
-    public void actualizarEstado(String nuevoEstado) {
-
-        this.estadoEntrega = nuevoEstado;
-
+    /** Cambia el estado del pedido. */
+    public void cambiarEstado(String nuevoEstado) {
+        if (notBlank(nuevoEstado)) {
+            this.estado = nuevoEstado;
+        }
     }
 
-    public void setId(Long id) {
-        this.id = id;
-    }
-=======
-     * Reporta el vehículo con el que realiza la entrega.
-     * @return descripción del vehículo
-     */
-
-    public String reportarUbicacion() {
-
-        return "Repartidor " + nombre + " en vehículo: " + vehiculo;
-
+    /** Marca el pedido como entregado. */
+    public void marcarEntregado() {
+        this.estado = "Entregado";
     }
 
->>>>>>> 8ac433caaccbbc69b8eb84307c9754fb917738e1
+    /** Marca el pedido como cancelado. */
+    public void cancelar() {
+        this.estado = "Cancelado";
+    }
+
+    @Override
+    public String toString() {
+        return "Pedido{id=" + idPedido +
+                ", cliente=" + (cliente != null ? cliente.getNombreCompleto() : "null") +
+                ", estado='" + safe(estado) + '\'' +
+                ", total=" + total +
+                '}';
+    }
+
+   /* Helpers internos */
+  
+    /* Comprueba que la cadena no sea null ni esté vacía después de quitar espacios. */
+    private static boolean notBlank(String s) { return s != null && !s.isBlank(); }
+  
+    /* Devuelve el valor original sin null (en caso de null devuelve "" vacío). */ 
+    private static String safe(String s) { return s == null ? "" : s.trim(); }
+  
 }

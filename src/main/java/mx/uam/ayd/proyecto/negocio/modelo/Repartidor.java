@@ -1,118 +1,91 @@
 package mx.uam.ayd.proyecto.negocio.modelo;
 
 import jakarta.persistence.*;
-<<<<<<< HEAD
 import lombok.*;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Representa a un repartidor encargado de entregar pedidos.
-=======
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-/**
- * Representa a un repartidor encargado de entregar pedidos a domicilio.
- * Contiene datos de contacto, estado de disponibilidad y vehículo asignado.
->>>>>>> 8ac433caaccbbc69b8eb84307c9754fb917738e1
+ * Representa a un repartidor de la carnicería.
  */
-
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
-<<<<<<< HEAD
 @AllArgsConstructor
-=======
->>>>>>> 8ac433caaccbbc69b8eb84307c9754fb917738e1
-
+@Builder
 public class Repartidor {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idRepartidor;
 
+    /** Nombre(s) del repartidor */
+    @Column(nullable = false)
     private String nombre;
+
+    /** Apellido(s) del repartidor */
+    @Column(nullable = false)
     private String apellido;
+
+    /** Teléfono de contacto */
     private String telefono;
-    private boolean disponible;
-    private String vehiculo;
 
-    /**
-<<<<<<< HEAD
-     * Lista de pedidos asignados a este repartidor.
-     */
+    /** Fecha de ingreso */
+    private LocalDate fechaIngreso;
 
-    @OneToMany(mappedBy = "repartidor", cascade = CascadeType.ALL)
-    private List<Pedido> pedidos;
+    /** Estatus (activo/inactivo) */
+    @Builder.Default
+    private boolean activo = true;
 
-    /**
-     * Marca el pedido como tomado para entrega.
-     * @param pedido pedido a tomar
-     */
+    /** Lista de pedidos asignados a este repartidor */
+    @OneToMany(mappedBy = "repartidor", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
+    private List<Pedido> pedidos = new ArrayList<>();
 
-    public void tomarEntrega(Pedido pedido) {
+    /* Métodos de dominio */
 
-        pedidos.add(pedido);
-=======
-     * Marca al repartidor como ocupado al tomar una entrega.
-     */
-
-    public void tomarEntrega() {
-
->>>>>>> 8ac433caaccbbc69b8eb84307c9754fb917738e1
-        this.disponible = false;
-
-    }
-
-    /**
-<<<<<<< HEAD
-     * Marca el pedido como entregado y al repartidor como disponible.
-=======
-     * Marca al repartidor como disponible después de completar una entrega.
->>>>>>> 8ac433caaccbbc69b8eb84307c9754fb917738e1
-     */
-
-    public void completarEntrega() {
-
-        this.disponible = true;
-
-    }
-
-    /**
-<<<<<<< HEAD
-     * Simula el reporte de ubicación del repartidor.
-     */
-
-    public void reportarUbicacion() {
-
-        // lógica futura de geolocalización
-
-    }
-
-    /**
-     * Devuelve el nombre completo del repartidor.
-     */
-
+    /** Nombre completo para UI o reportes. */
     public String getNombreCompleto() {
-
-        return nombre + " " + apellido;
-
+        String n = nombre != null ? nombre : "";
+        String a = apellido != null ? apellido : "";
+        return (n + " " + a).trim();
     }
 
-}
-=======
-     * Reporta el vehículo con el que realiza la entrega.
-     * @return descripción textual del vehículo
-     */
-
-    public String reportarUbicacion() {
-
-        return "Repartidor " + nombre + " en vehículo: " + vehiculo;
-
+    /** Activa o inactiva al repartidor. */
+    public void marcarActivo(boolean nuevoEstado) {
+        this.activo = nuevoEstado;
     }
 
+    /** Asigna un pedido y ajusta relación bidireccional. */
+    public void asignarPedido(Pedido pedido) {
+        if (pedido == null) return;
+        pedidos.add(pedido);
+        pedido.setRepartidor(this);
+    }
+
+    /** Elimina un pedido asignado y ajusta relación bidireccional. */
+    public void quitarPedido(Pedido pedido) {
+        if (pedido == null) return;
+        pedidos.remove(pedido);
+        if (pedido.getRepartidor() == this) {
+            pedido.setRepartidor(null);
+        }
+    }
+
+    /** Verifica si el repartidor está disponible (activo y sin pedidos asignados). */
+    public boolean disponible() {
+        return activo && (pedidos == null || pedidos.isEmpty());
+    }
+
+    @Override
+    public String toString() {
+        return "Repartidor{id=" + idRepartidor +
+                ", nombreCompleto='" + getNombreCompleto() + '\'' +
+                ", activo=" + activo +
+                ", pedidosAsignados=" + (pedidos != null ? pedidos.size() : 0) +
+                '}';
+    }
 }
->>>>>>> 8ac433caaccbbc69b8eb84307c9754fb917738e1

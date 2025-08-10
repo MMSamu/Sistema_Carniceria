@@ -7,5 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * Repositorio para la entidad Producto.
  * Proporciona acceso a operaciones CRUD sobre la base de datos.
  */
+
 public interface ProductoRepository extends JpaRepository<Producto, Long> {
+  
 }

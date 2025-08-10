@@ -12,30 +12,21 @@ import java.util.Optional;
 /**
  * Servicio que contiene la lógica de negocio relacionada con los clientes.
  */
+
 @Service
 @RequiredArgsConstructor
 public class ClienteService {
 
     private final ClienteRepository clienteRepository;
 
-    /**
-     * Registra un nuevo cliente en el sistema a partir de la entidad completa.
-     * @param cliente el cliente a registrar
-     * @return el cliente guardado
-     */
+    /** Registra un nuevo cliente a partir de la entidad completa. */
+  
     public Cliente registrarCliente(Cliente cliente) {
         return clienteRepository.save(cliente);
     }
 
-    /**
-     * Registra un nuevo cliente usando parámetros básicos.
-     * (Conveniencia; útil cuando aún no construyes la entidad).
-     * @param nombre   nombre del cliente
-     * @param apellido apellido del cliente
-     * @param telefono teléfono del cliente
-     * @param email    correo del cliente
-     * @return el cliente guardado
-     */
+    /** Registra un nuevo cliente usando parámetros básicos. */
+  
     public Cliente registrarCliente(String nombre, String apellido, String telefono, String email) {
         Cliente cliente = new Cliente();
         cliente.setNombre(nombre);
@@ -45,23 +36,18 @@ public class ClienteService {
         return clienteRepository.save(cliente);
     }
 
-    /**
-     * Obtiene un cliente por su identificador.
-     * @param idCliente identificador del cliente
-     * @return el cliente, si existe
-     */
+    /** Obtiene un cliente por su identificador. */
+  
     public Optional<Cliente> obtenerClientePorId(Long idCliente) {
         return clienteRepository.findById(idCliente);
     }
 
-    /**
-     * Obtiene la lista completa de clientes.
-     * @return lista de clientes
-     */
+    /** Obtiene la lista completa de clientes. */
+  
     public List<Cliente> listarClientes() {
-        // Si tu repositorio extiende JpaRepository, podrías usar: return clienteRepository.findAll();
         List<Cliente> clientes = new ArrayList<>();
         clienteRepository.findAll().forEach(clientes::add);
         return clientes;
     }
 }
+
