@@ -5,13 +5,13 @@ import mx.uam.ayd.proyecto.datos.RepartidorRepository;
 import mx.uam.ayd.proyecto.negocio.modelo.Repartidor;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Servicio que contiene la lógica de negocio relacionada con los repartidores.
+ * Servicio de repartidores.
  */
-
 @Service
 @RequiredArgsConstructor
 public class RepartidorService {
@@ -19,39 +19,31 @@ public class RepartidorService {
     private final RepartidorRepository repartidorRepository;
 
     /**
-     * Registra un nuevo repartidor en el sistema.
-     * @param repartidor entidad Repartidor a registrar
-     * @return repartidor registrado
+     * Registra un nuevo repartidor.
      */
-  
     public Repartidor registrarRepartidor(Repartidor repartidor) {
         return repartidorRepository.save(repartidor);
     }
 
     /**
-     * Obtiene un repartidor por su identificador.
-     * @param idRepartidor identificador del repartidor
-     * @return repartidor si existe
+     * Obtiene un repartidor por su id.
      */
-  
     public Optional<Repartidor> obtenerRepartidorPorId(Long idRepartidor) {
         return repartidorRepository.findById(idRepartidor);
     }
 
     /**
-     * Obtiene todos los repartidores registrados.
-     * @return lista de repartidores
+     * Iterable -> List para compatibilidad con CrudRepository.
      */
-  
     public List<Repartidor> listarRepartidores() {
-        return repartidorRepository.findAll();
+        List<Repartidor> list = new ArrayList<>();
+        repartidorRepository.findAll().forEach(list::add);
+        return list;
     }
 
     /**
-     * Elimina un repartidor por su identificador.
-     * @param idRepartidor identificador del repartidor
+     * Elimina un repartidor por su id.
      */
-  
     public void eliminarRepartidor(Long idRepartidor) {
         repartidorRepository.deleteById(idRepartidor);
     }
