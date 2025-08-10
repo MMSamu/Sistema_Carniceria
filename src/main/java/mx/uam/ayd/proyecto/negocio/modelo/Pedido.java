@@ -122,5 +122,32 @@ public class Pedido {
   
     /* Devuelve el valor original sin null (en caso de null devuelve "" vacío). */ 
     private static String safe(String s) { return s == null ? "" : s.trim(); }
+
+    // ====== CAMPO REQUERIDO POR TESTS (si aún no existe) ======
+    private String tipoEntrega;
+
+    // ====== ALIAS PARA COMPATIBILIDAD CON TESTS ======
+    public void setId(long id) {
+        
+    // ajusta el nombre del campo si en tu entidad no se llama idPedido
+    this.idPedido = id;
+        
+    }
+    
+    public long getId() {
+    
+    return this.idPedido != null ? this.idPedido : 0L;
+        
+    }
+
+    public String getTipoEntrega() {
+    return tipoEntrega;
+        
+    }
+    
+    public void setTipoEntrega(String tipoEntrega) {
+    this.tipoEntrega = tipoEntrega;
+    }
+
   
 }
