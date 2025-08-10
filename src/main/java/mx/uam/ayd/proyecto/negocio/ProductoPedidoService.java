@@ -10,13 +10,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Servicio para la relación Producto-Pedido.
+ */
 @Service
 @RequiredArgsConstructor
 public class ProductoPedidoService {
 
     private final ProductoPedidoRepository productoPedidoRepository;
 
-    /*  CRUD persistente */
+    /* CRUD persistente */
 
     public ProductoPedido registrarProductoPedido(ProductoPedido productoPedido) {
         return productoPedidoRepository.save(productoPedido);
@@ -47,33 +50,34 @@ public class ProductoPedidoService {
         return new ArrayList<>(carrito);
     }
 
-    /** Agrega un renglón al carrito. */
-    public void agregarProducto(ProductoPedido pp) {
-        if (pp != null) {
-            carrito.add(pp);
+    /** Agrega un renglón al carrito. La UI espera boolean. */
+    public boolean agregarProducto(ProductoPedido pp) {
+        if (pp == null) return false;
+        carrito.add(pp);
+        return true;
+    }
+
+    /** Elimina un renglón del carrito. La UI espera boolean. */
+    public boolean eliminarProducto(ProductoPedido pp) {
+        return carrito.remove(pp);
+    }
+
+    /** Actualiza el peso del renglón. La UI espera boolean. */
+    public boolean actualizarPesoProducto(ProductoPedido pp, float nuevoPeso) {
+        if (pp == null) return false;
+        pp.setPeso(nuevoPeso);
+        if (pp.getPedido() != null) {
+            pp.getPedido().recalcularTotal();
         }
+        return true;
     }
 
-    /** Elimina un renglón del carrito. */
-    public void eliminarProducto(ProductoPedido pp) {
-        carrito.remove(pp);
-    }
-
-    /** Actualiza el "peso" que la UI muestra para el renglón (compatibilidad). */
-    public void actualizarPesoProducto(ProductoPedido pp, float nuevoPeso) {
-        if (pp != null) {
-            pp.setPeso(nuevoPeso);
-            if (pp.getPedido() != null) {
-                pp.getPedido().recalcularTotal();
-            }
-        }
-    }
-
-    /** Total del carrito (suma de subtotales). */
-    public BigDecimal calcularTotal() {
-        return carrito.stream()
+    /** La UI espera float en calcularTotal(). */
+    public float calcularTotal() {
+        BigDecimal total = carrito.stream()
                 .map(ProductoPedido::getSubtotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
+        return total.floatValue();
     }
 
     /** Nota de pedido que la UI permite capturar. */
