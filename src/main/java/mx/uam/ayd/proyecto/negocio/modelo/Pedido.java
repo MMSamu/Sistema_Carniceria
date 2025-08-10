@@ -24,6 +24,11 @@ public class Pedido {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idPedido;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "idRepartidor")
+    private Repartidor repartidor;
+
+
     /** Cliente que realiza el pedido */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "idCliente")
