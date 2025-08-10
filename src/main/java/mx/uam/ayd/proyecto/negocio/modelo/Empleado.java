@@ -47,4 +47,10 @@ public class Empleado {
         System.out.println("Empleado " + nombreCompleto() + " procesó el pedido " + idPedido);
 
     }
+
+    public void procesarPedido(Pedido p) {
+    // TODO: implementar lógica real de procesamiento
+        
+    }
+
 }
