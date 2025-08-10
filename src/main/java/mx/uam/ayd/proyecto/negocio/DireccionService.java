@@ -5,13 +5,13 @@ import mx.uam.ayd.proyecto.datos.DireccionRepository;
 import mx.uam.ayd.proyecto.negocio.modelo.Direccion;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 /**
- * Servicio que contiene la lógica de negocio relacionada con las direcciones.
+ * Servicio de direcciones.
  */
-
 @Service
 @RequiredArgsConstructor
 public class DireccionService {
@@ -20,40 +20,31 @@ public class DireccionService {
 
     /**
      * Registra una nueva dirección.
-     * @param direccion entidad Dirección a registrar
-     * @return dirección registrada
      */
-  
     public Direccion registrarDireccion(Direccion direccion) {
         return direccionRepository.save(direccion);
     }
 
     /**
-     * Obtiene una dirección por su identificador.
-     * @param idDireccion identificador de la dirección
-     * @return la dirección si existe
+     * Obtiene una dirección por su id.
      */
-  
     public Optional<Direccion> obtenerDireccionPorId(Long idDireccion) {
         return direccionRepository.findById(idDireccion);
     }
 
     /**
-     * Obtiene todas las direcciones registradas.
-     * @return lista de direcciones
+     * Iterable -> List para compatibilidad con CrudRepository.
      */
-  
     public List<Direccion> listarDirecciones() {
-        return direccionRepository.findAll();
+        List<Direccion> list = new ArrayList<>();
+        direccionRepository.findAll().forEach(list::add);
+        return list;
     }
 
     /**
-     * Elimina una dirección por su identificador.
-     * @param idDireccion identificador de la dirección
+     * Elimina una dirección por su id.
      */
-  
     public void eliminarDireccion(Long idDireccion) {
         direccionRepository.deleteById(idDireccion);
     }
 }
-
