@@ -50,5 +50,19 @@ public class PedidoService {
     public void asignarMetodoEntrega(String metodo) {
         // NO-OP: solo para compilar si la UI llama sin id
     }
+
+    /**
+     * Asigna el método de entrega y devuelve el Pedido actualizado.
+     * (Compatibilidad con tests que esperan un retorno Pedido)
+     */
+    
+    public mx.uam.ayd.proyecto.negocio.modelo.Pedido asignarMetodoEntrega(long idPedido, String metodo) {
+    var pedido = pedidoRepository.findById(idPedido)
+            .orElseThrow(() -> new IllegalArgumentException("Pedido no encontrado: " + idPedido));
+    pedido.setTipoEntrega(metodo);
+    return PedidoRepository.save(pedido);
+        
+    }
+
 }
 
