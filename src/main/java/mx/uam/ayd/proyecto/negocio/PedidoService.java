@@ -36,14 +36,18 @@ public class PedidoService {
 
     /* Métodos que usa la UI de "Asignar método de entrega" */
 
-    /** Devuelve catálogo simple para la UI (stub). */
+    /** Catálogo simple para la UI (stub). */
     public List<String> listarMetodosEntrega() {
         return List.of("A domicilio", "Recoger en tienda");
     }
 
-    /** Stub: asigna el método de entrega (ajusta a tu persistencia real). */
+    /** Versión con id (la correcta para persistir). */
     public void asignarMetodoEntrega(long idPedido, String metodo) {
         // TODO: persistir el método en DB (campo en Pedido o entidad relacionada)
-        // Por ahora es un no-op para que compile el flujo de la UI.
+    }
+
+    /** Overload sin id para llamadas existentes en la UI (compatibilidad). */
+    public void asignarMetodoEntrega(String metodo) {
+        // NO-OP: solo para compilar si la UI llama sin id
     }
 }
