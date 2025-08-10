@@ -1,72 +1,93 @@
 package mx.uam.ayd.proyecto.negocio.modelo;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
-/**
- * Representa un producto que ha sido solicitado como parte de un pedido.
- * Contiene la información necesaria para identificar el producto, su precio,
- * peso y su disponibilidad al momento de procesar el pedido.
- */
+import java.math.BigDecimal;
+
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class ProductoPedido {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int idProducto;
+    private Long idProductoPedido;
 
-    private String nombre;
-    private String descripcion;
-    private float precio;
-    private boolean disponible;
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "idProducto")
+    private Producto producto;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "idPedido")
+    private Pedido pedido;
+
+    @Column(nullable = false)
+    private int cantidad;
+
+    @Column(precision = 12, scale = 2, nullable = false)
+    private BigDecimal precioUnitario;
+
+    /* Compatibilidad con UI del carrito */
     private float peso;
 
-    /**
-     * Actualiza el precio del producto en el pedido.
-     * 
-     * @param nuevoPrecio nuevo precio a establecer
-     */
-    public void actualizarPrecio(float nuevoPrecio) {
-        this.precio = nuevoPrecio;
-    }
-
-    /**
-     * Verifica si el producto está disponible para ser agregado al pedido.
-     * 
-     * @return true si el producto está disponible, false en caso contrario
-     */
-    public boolean verificarDisponibilidad() {
-        return disponible;
-    }
-
-    /**
-     * Calcula el subtotal de este producto (precio × peso)
-     * 
-     * @return subtotal del producto
-     */
-    public float calcularSubtotal() {
-        return precio * peso;
-    }
-
-    public void setPeso(float peso) {
-        this.peso = peso;
-    }
-
     public String getNombre() {
-        return this.nombre;
+        return producto != null ? producto.getNombre() : null;
     }
 
-    public float getPeso() {
-        return this.peso;
+    public float getPeso() { return peso; }
+    public void setPeso(float p) { this.peso = Math.max(0, p); }
+
+    public BigDecimal getPrecio() { return precioUnitario; }
+
+    public BigDecimal calcularSubtotal() { return getSubtotal(); }
+    
+    /* ********************************************************** */
+
+    public BigDecimal getSubtotal() {
+        if (precioUnitario == null) return BigDecimal.ZERO;
+        return precioUnitario.multiply(BigDecimal.valueOf(Math.max(0, cantidad)));
     }
 
-    public float getPrecio() {
-        return this.precio;
+    public void actualizarCantidad(int nuevaCantidad) {
+        this.cantidad = Math.max(0, nuevaCantidad);
+        if (pedido != null) {
+            pedido.recalcularTotal();
+        }
     }
 
+    public void actualizarPrecioUnitario(BigDecimal nuevoPrecio) {
+        if (nuevoPrecio == null || nuevoPrecio.compareTo(BigDecimal.ZERO) < 0) return;
+        this.precioUnitario = nuevoPrecio;
+        if (pedido != null) {
+            pedido.recalcularTotal();
+        }
+    }
+
+    public void vincularPedido(Pedido p) {
+        this.pedido = p;
+        if (p != null && !p.getProductosPedido().contains(this)) {
+            p.getProductosPedido().add(this);
+        }
+    }
+
+    public void vincularProducto(Producto pr) {
+        this.producto = pr;
+        if (pr != null && (pr.getProductosPedido() != null) && !pr.getProductosPedido().contains(this)) {
+            pr.getProductosPedido().add(this);
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "ProductoPedido{id=" + idProductoPedido +
+                ", producto=" + (producto != null ? producto.getNombre() : "null") +
+                ", cantidad=" + cantidad +
+                ", precioUnitario=" + precioUnitario +
+                ", subtotal=" + getSubtotal() +
+                '}';
+    }
 }
