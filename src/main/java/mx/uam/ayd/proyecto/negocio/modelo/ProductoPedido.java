@@ -5,10 +5,6 @@ import lombok.*;
 
 import java.math.BigDecimal;
 
-/**
- * Relación entre un Producto y un Pedido, con cantidad y precio unitario.
- */
-
 @Entity
 @Getter
 @Setter
@@ -21,33 +17,42 @@ public class ProductoPedido {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idProductoPedido;
 
-    /** Producto asociado */
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "idProducto")
     private Producto producto;
 
-    /** Pedido asociado */
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "idPedido")
     private Pedido pedido;
 
-    /** Cantidad solicitada del producto */
     @Column(nullable = false)
     private int cantidad;
 
-    /** Precio unitario aplicado en este renglón */
     @Column(precision = 12, scale = 2, nullable = false)
     private BigDecimal precioUnitario;
 
-    /* Métodos de dominio */
+    /* Compatibilidad con UI del carrito */
+  
+    private float peso;
 
-    /** Subtotal = cantidad * precioUnitario (nunca null). */
+    public String getNombre() {
+        return producto != null ? producto.getNombre() : null;
+    }
+
+    public float getPeso() { return peso; }
+    public void setPeso(float p) { this.peso = Math.max(0, p); }
+
+    public BigDecimal getPrecio() { return precioUnitario; }
+
+    public BigDecimal calcularSubtotal() { return getSubtotal(); }
+  
+    /* ************************************************************* */
+
     public BigDecimal getSubtotal() {
         if (precioUnitario == null) return BigDecimal.ZERO;
         return precioUnitario.multiply(BigDecimal.valueOf(Math.max(0, cantidad)));
     }
 
-    /** Actualiza cantidad y mantiene el total del pedido coherente si está enlazado. */
     public void actualizarCantidad(int nuevaCantidad) {
         this.cantidad = Math.max(0, nuevaCantidad);
         if (pedido != null) {
@@ -55,7 +60,6 @@ public class ProductoPedido {
         }
     }
 
-    /** Cambia el precio unitario y recalcula el total del pedido si aplica. */
     public void actualizarPrecioUnitario(BigDecimal nuevoPrecio) {
         if (nuevoPrecio == null || nuevoPrecio.compareTo(BigDecimal.ZERO) < 0) return;
         this.precioUnitario = nuevoPrecio;
@@ -64,7 +68,6 @@ public class ProductoPedido {
         }
     }
 
-    /** Ajusta la relación bidireccional con Pedido. */
     public void vincularPedido(Pedido p) {
         this.pedido = p;
         if (p != null && !p.getProductosPedido().contains(this)) {
@@ -72,7 +75,6 @@ public class ProductoPedido {
         }
     }
 
-    /** Ajusta la relación bidireccional con Producto. */
     public void vincularProducto(Producto pr) {
         this.producto = pr;
         if (pr != null && (pr.getProductosPedido() != null) && !pr.getProductosPedido().contains(this)) {
@@ -90,3 +92,4 @@ public class ProductoPedido {
                 '}';
     }
 }
+

@@ -10,7 +10,6 @@ import java.time.Period;
 /**
  * Representa a un empleado del sistema.
  */
-
 @Entity
 @Getter
 @Setter
@@ -57,7 +56,7 @@ public class Empleado {
     @Builder.Default
     private boolean activo = true;
 
-    /*  Métodos de dominio  */
+    /* Métodos de dominio */
 
     /** Nombre completo para UI/reportes. */
     public String getNombreCompleto() {
@@ -106,12 +105,20 @@ public class Empleado {
         this.salario = nuevoSalario;
     }
 
-    /** Incrementa el salario por porcentaje  */
+    /** Incrementa el salario por porcentaje. */
     public void incrementarSalarioPorcentaje(BigDecimal porcentaje) {
         if (porcentaje == null) return;
         if (this.salario == null) this.salario = BigDecimal.ZERO;
         BigDecimal factor = porcentaje.divide(BigDecimal.valueOf(100));
         this.salario = this.salario.add(this.salario.multiply(factor));
+    }
+
+    /**
+     * Hook invocado por la capa de negocio/presentación.
+     * Por ahora es un no-op para mantener compatibilidad; implementa la lógica real si la modelan.
+     */
+    public void procesarPedido(Pedido p) {
+        // TODO: implementar lógica real de procesamiento si aplica
     }
 
     @Override
@@ -123,12 +130,11 @@ public class Empleado {
                 '}';
     }
 
-    /* Helpers internos */
-  
-    /* Comprueba que la cadena no sea null ni esté vacía después de quitar espacios. */
+    /*  Helpers internos */
+
+    /** Comprueba que la cadena no sea null ni esté vacía. */
     private static boolean notBlank(String s) { return s != null && !s.isBlank(); }
-  
-    /* Devuelve el valor original sin null (en caso de null devuelve "" vacío). */ 
+
+    /** Evita nulls en representaciones de texto. */
     private static String safe(String s) { return s == null ? "" : s.trim(); }
-  
 }
