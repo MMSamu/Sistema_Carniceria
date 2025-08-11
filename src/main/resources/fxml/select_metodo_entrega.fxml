@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml"
+      fx:controller="mx.uam.ayd.proyecto.presentacion.seleccionMetodoEntrega.ControlMetodoEntrega"
+      spacing="15" alignment="CENTER" prefWidth="320" prefHeight="180">
+
+    <Label text="Selecciona el método de entrega:"/>
+
+    <!-- Debe coincidir con el fx:id usado en el Control -->
+    <ChoiceBox fx:id="choiceMetodoEntrega" prefWidth="220"/>
+
+    <HBox spacing="10" alignment="CENTER">
+        <Button text="Aceptar" onAction="#onAceptar"/>
+        <Button text="Cancelar" onAction="#onCancelar"/>
+    </HBox>
+
+</VBox>
+
+

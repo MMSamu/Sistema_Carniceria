@@ -1,9 +1,10 @@
 package mx.uam.ayd.proyecto.presentacion.editarCarrito;
 
-import java.util.List;
-
 import mx.uam.ayd.proyecto.negocio.ProductoPedidoService;
 import mx.uam.ayd.proyecto.negocio.modelo.ProductoPedido;
+
+import java.math.BigDecimal;
+import java.util.List;
 
 public class ControlCarrito {
 
@@ -25,12 +26,19 @@ public class ControlCarrito {
         servicio.eliminarProducto(producto);
     }
 
+    /**
+     * Nos quedamos con firma boolean por compatibilidad con la UI,
+     * pero el servicio devuelve void, así que retornamos true.
+     */
     public boolean actualizarPeso(ProductoPedido producto, float nuevoPeso) {
-        return servicio.actualizarPesoProducto(producto, nuevoPeso);
+        servicio.actualizarPesoProducto(producto, nuevoPeso);
+        return true;
     }
 
+    /** El servicio devuelve BigDecimal -> convertimos a float para la UI antigua. */
     public float calcularTotal() {
-        return servicio.calcularTotal();
+        BigDecimal total = servicio.calcularTotal();
+        return total != null ? total.floatValue() : 0f;
     }
 
     public void agregarNota(String nota) {

@@ -1,61 +1,32 @@
 package mx.uam.ayd.proyecto.negocio.modelo;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-/**
- * Representa a un repartidor encargado de entregar pedidos a domicilio.
- * Contiene datos de contacto, estado de disponibilidad y vehículo asignado.
- */
+import lombok.*;
+import java.time.LocalDate;
 
 @Entity
-@Getter
-@Setter
-@NoArgsConstructor
-
+@Getter @Setter
+@NoArgsConstructor @AllArgsConstructor @Builder
 public class Pedido {
 
     @Id
+
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idRepartidor;
 
-    private String nombre;
-    private String apellido;
-    private String telefono;
-    private boolean disponible;
-    private String vehiculo;
+    private Long idPedido;
 
-    /**
-     * Marca al repartidor como ocupado al tomar una entrega.
-     */
+    // Compatibilidad con tests que usan setId/getId
 
-    public void tomarEntrega() {
+    public Long getId() { return idPedido; }
 
-        this.disponible = false;
+    public void setId(Long id) { this.idPedido = id; }
 
-    }
+    // Otras propiedades deldominio…
 
-    /**
-     * Marca al repartidor como disponible después de completar una entrega.
-     */
+    private String tipoEntrega;   // <- NECESARIO para HU de método de entrega
 
-    public void completarEntrega() {
+    private LocalDate fechaCreacion;
 
-        this.disponible = true;
-
-    }
-
-    /**
-     * Reporta el vehículo con el que realiza la entrega.
-     * @return descripción del vehículo
-     */
-
-    public String reportarUbicacion() {
-
-        return "Repartidor " + nombre + " en vehículo: " + vehiculo;
-
-    }
-
+    // Getters/Setters de tipoEntrega ya los genera Lombok
 }
+
