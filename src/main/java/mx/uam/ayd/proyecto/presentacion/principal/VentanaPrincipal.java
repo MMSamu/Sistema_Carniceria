@@ -1,6 +1,7 @@
 package mx.uam.ayd.proyecto.presentacion.principal;
 
 import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -110,4 +111,15 @@ public class VentanaPrincipal {
 		}
 	}
 
+    public void onCerrar(ActionEvent actionEvent) {
+    }
+
+	@FXML
+	private void onFinalizarPedido(){
+		if (control != null) {
+			control.onFinalizarPedido();
+		} else {
+			mostrarError("No se pudo abrir el checklist (control no inicializado).");
+		}
+	}
 }

@@ -20,6 +20,8 @@
         <Button text="Revisar pedido (checklist)"
                 onAction="#onChecklist"/>
 
+        <Button text="Finalizar pedido" onAction="#onFinalizarPedido"/>
+
     </HBox>
 
 

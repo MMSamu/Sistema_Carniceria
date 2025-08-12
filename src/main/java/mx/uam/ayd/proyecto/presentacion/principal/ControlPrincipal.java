@@ -1,10 +1,12 @@
 	package mx.uam.ayd.proyecto.presentacion.principal;
 
 	import jakarta.annotation.PostConstruct;
+	import javafx.fxml.FXML;
 	import mx.uam.ayd.proyecto.negocio.CheckoutService;
 	import mx.uam.ayd.proyecto.negocio.PedidoService;
 	import mx.uam.ayd.proyecto.negocio.modelo.ProductoPedido;
 	import mx.uam.ayd.proyecto.presentacion.checklist.VentanaChecklist;
+	import mx.uam.ayd.proyecto.presentacion.finalizacionNotificacion.ControlFinalizacionPedido;
 	import mx.uam.ayd.proyecto.presentacion.seleccionMetodoEntrega.ControlMetodoEntrega;
 	import mx.uam.ayd.proyecto.presentacion.seleccionMetodoEntrega.VentanaMetodoEntrega;
 	import org.springframework.beans.factory.annotation.Autowired;
@@ -28,10 +30,11 @@
 private  final CheckoutService checkoutService; // servicio de negocio para checklist
 		@Autowired
 		public ControlPrincipal(VentanaPrincipal ventana,
-                                PedidoService pedidoService, CheckoutService checkoutService) {
+                                PedidoService pedidoService, CheckoutService checkoutService, ControlFinalizacionPedido controlFinalizacionPedido) {
 			this.ventana = ventana;
 			this.pedidoService = pedidoService;
             this.checkoutService = checkoutService;
+            this.controlFinalizacionPedido = controlFinalizacionPedido;
         }
 
 		/** Conexión bidireccional ventana <-> control */
@@ -114,5 +117,15 @@ private  final CheckoutService checkoutService; // servicio de negocio para chec
 			} catch (Exception e) {
 				ventana.mostrarError("No se pudo abrir el checklist (" + e.getMessage() + ")");
 			}
+		}
+
+
+		private final ControlFinalizacionPedido controlFinalizacionPedido;
+
+		@FXML
+        void onFinalizarPedido() {
+			controlFinalizacionPedido.mostrarConfirmacionYNotificar(
+					123L, "TIENDA", "5551234567", "WHATSAPP"
+			);
 		}
 	}

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox xmlns="http://javafx.com/javafx"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="mx.uam.ayd.proyecto.presentacion.principal.VentanaPrincipal"
+      spacing="10" style="-fx-padding: 15px;">
+
+
+<Label text="¡Pedido finalizado!" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+
+    <Label fx:id="lblIdPedido"    text="Pedido: --"/>
+    <Label fx:id="lblEstado"      text="Estado: --"/>
+    <Label fx:id="lblTipoEntrega" text="Entrega: --"/>
+
+    <Label wrapText="true"
+           text="Recibirás un mensaje por WhatsApp/SMS con los detalles."/>
+
+    <Button text="Cerrar" onAction="#onCerrar"/>
+</VBox>

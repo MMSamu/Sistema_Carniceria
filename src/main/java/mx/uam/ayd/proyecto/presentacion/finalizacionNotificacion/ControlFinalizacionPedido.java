@@ -1,42 +1,54 @@
 package mx.uam.ayd.proyecto.presentacion.finalizacionNotificacion;
 
-import lombok.RequiredArgsConstructor;                  // inyección por constructor
+import javafx.application.Platform;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import lombok.RequiredArgsConstructor;
 import mx.uam.ayd.proyecto.negocio.NotificacionService;
 import mx.uam.ayd.proyecto.negocio.modelo.ResumenNotificacion;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-/**
- * Llama al servicio para enviar la notificación y muestra el pop-up de confirmación.
- */
 @Component
 @RequiredArgsConstructor
 public class ControlFinalizacionPedido {
 
-    private final NotificacionService servicioNotificacion;          // negocio HU-05
-    private final VentanaFinalizacionPedido vista = new VentanaFinalizacionPedido(); // pop-up
+    private final NotificacionService servicioNotificacion;
+    private final ApplicationContext applicationContext;
 
-    /**
-     * Punto de entrada desde la UI (por ejemplo, acción del botón "Finalizar pedido").
-     *
-     * @param idPedido        número de pedido generado
-     * @param tipoEntrega     "TIENDA" o "DOMICILIO"
-     * @param telefonoDestino número al que se enviará la notificación
-     * @param canalPreferido  "WHATSAPP" o "SMS"
-     */
-    public void mostrarConfirmacionYNotificar(Long idPedido,String tipoEntrega,String telefonoDestino,String canalPreferido) {
+    public void mostrarConfirmacionYNotificar(
+            Long idPedido, String tipoEntrega, String telefonoDestino, String canalPreferido) {
         try {
-            // Llegamos aquí solo cuando el pedido ya quedó finalizado en el flujo actual
             boolean pedidoFinalizado = true;
 
-            // Negocio: enviar (simulado) + auditar
-            ResumenNotificacion resumen = servicioNotificacion.enviarNotificacionPedido(idPedido, tipoEntrega, telefonoDestino, canalPreferido, pedidoFinalizado);
+            ResumenNotificacion resumen = servicioNotificacion.enviarNotificacionPedido(
+                    idPedido, tipoEntrega, telefonoDestino, canalPreferido, pedidoFinalizado);
 
-            // Vista: mostrar confirmación
-            vista.mostrar(resumen.getIdPedido(), resumen.getEstado(), resumen.getTipoEntrega());
+            Platform.runLater(() -> {
+                try {
+                    FXMLLoader loader = new FXMLLoader(
+                            getClass().getResource("/fxml/finalizacion-pedido.fxml"));
+                    loader.setControllerFactory(applicationContext::getBean);
+                    Parent root = loader.load();
+
+                    VentanaFinalizacionPedidoController controller = loader.getController();
+                    controller.setResumen(resumen.getIdPedido(), resumen.getEstado(), resumen.getTipoEntrega());
+
+                    Stage stage = new Stage();
+                    stage.initModality(Modality.APPLICATION_MODAL);
+                    stage.setTitle("Pedido confirmado");
+                    stage.setScene(new Scene(root));
+                    stage.show();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
 
         } catch (Exception ex) {
-            // Vista: mostrar error si algo falla
-            vista.mostrarError("No se pudo notificar: " + ex.getMessage());
+            System.err.println("No se pudo notificar: " + ex.getMessage());
         }
     }
 }
