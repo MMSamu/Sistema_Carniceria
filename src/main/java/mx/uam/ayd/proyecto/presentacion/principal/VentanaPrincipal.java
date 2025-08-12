@@ -11,7 +11,6 @@ import mx.uam.ayd.proyecto.presentacion.checklist.ControlChecklist;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
 
-
 import java.io.IOException;
 import java.net.URL;
 
@@ -19,11 +18,11 @@ import java.net.URL;
 public class VentanaPrincipal {
 
 	private final ApplicationContext applicationContext;
+	private ControlPrincipal controlPrincipal;
 
 	public VentanaPrincipal(ApplicationContext applicationContext) { // <-- NUEVO constructor con Spring
 		this.applicationContext = applicationContext;
 	}
-
 
 	@Getter
 	private Stage stage;
@@ -35,7 +34,8 @@ public class VentanaPrincipal {
 	}
 
 	private void initializeUI() {
-		if (initialized) return;
+		if (initialized)
+			return;
 
 		if (!Platform.isFxApplicationThread()) {
 			Platform.runLater(this::initializeUI);
@@ -50,7 +50,7 @@ public class VentanaPrincipal {
 			}
 
 			FXMLLoader loader = new FXMLLoader(fxml);
-			//loader.setController(this);
+			// loader.setController(this);
 			loader.setControllerFactory(applicationContext::getBean);
 			Scene scene = new Scene(loader.load(), 600, 400);
 
@@ -95,7 +95,8 @@ public class VentanaPrincipal {
 			a.setTitle("Error");
 			a.setHeaderText(null);
 			a.setContentText(mensaje);
-			if (stage != null) a.initOwner(stage);
+			if (stage != null)
+				a.initOwner(stage);
 			a.showAndWait();
 		});
 	}
@@ -106,12 +107,11 @@ public class VentanaPrincipal {
 			a.setTitle("Información");
 			a.setHeaderText(null);
 			a.setContentText(mensaje);
-			if (stage != null) a.initOwner(stage);
+			if (stage != null)
+				a.initOwner(stage);
 			a.showAndWait();
 		});
 	}
-
-
 
 	@FXML
 	private void onChecklist() {
@@ -131,4 +131,12 @@ public class VentanaPrincipal {
 		}
 	}
 
+	@FXML
+	private void editarCarrito() {
+		if (control != null) {
+			control.editarcarrito();
+		} else {
+			mostrarError("El ControlPrincipal no está disponible.");
+		}
+	}
 }

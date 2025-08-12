@@ -23,6 +23,8 @@
 
         <Button text="Abrir pago" onAction="#onAbrirPago"/>
 
+     <Button text="Editar carrito" onAction="#editarCarrito"
+        style="-fx-min-width: 200px; -fx-min-height: 30px;"/>
     </HBox>
 
 

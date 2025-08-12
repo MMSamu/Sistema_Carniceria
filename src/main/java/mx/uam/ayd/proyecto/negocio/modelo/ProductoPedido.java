@@ -1,84 +1,125 @@
 package mx.uam.ayd.proyecto.negocio.modelo;
 
 import jakarta.persistence.*;
-import lombok.*;
-
 import java.math.BigDecimal;
+import java.util.Objects;
 
 @Entity
-@Getter @Setter
-@NoArgsConstructor @AllArgsConstructor @Builder
+@Table(name = "producto_pedido")
 public class ProductoPedido {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idProductoPedido;
+    private Long id;
 
+    // Cada renglón pertenece a un pedido (carrito)
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "idProducto")
-    private Producto producto;
-    private float precio;
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "idPedido")
+    @JoinColumn(name = "pedido_id", nullable = false)
     private Pedido pedido;
 
+    // Producto al que hace referencia el renglón
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "producto_id", nullable = false)
+    private Producto producto;
+
+    // Cantidad del producto en el pedido
+    @Column(nullable = false)
     private int cantidad;
 
-    @Column(precision = 12, scale = 2, nullable = false)
+    // Precio unitario “congelado” al momento de agregar al carrito
+    @Column(name = "precio_unitario", nullable = false, precision = 12, scale = 2)
     private BigDecimal precioUnitario;
 
-    // Compatibilidad UI/Tests
+    /* ========= Constructores ========= */
 
-    // Algunos tests usan p.setNombre(...)
+    protected ProductoPedido() {
+        /* JPA */ }
 
-    public void setNombre(String nombre) {
-
-        if (this.producto == null) this.producto = new Producto();
-
-        this.producto.setNombre(nombre);
-
+    public ProductoPedido(Pedido pedido, Producto producto, int cantidad, BigDecimal precioUnitario) {
+        if (cantidad <= 0)
+            throw new IllegalArgumentException("La cantidad debe ser > 0");
+        this.pedido = Objects.requireNonNull(pedido, "pedido requerido");
+        this.producto = Objects.requireNonNull(producto, "producto requerido");
+        this.cantidad = cantidad;
+        this.precioUnitario = Objects.requireNonNull(precioUnitario, "precioUnitario requerido");
     }
 
+    /* ========= Reglas de dominio simples ========= */
 
-    public String getNombre() {
-
-        return (producto != null) ? producto.getNombre() : null;
-
+    public void aumentar() {
+        this.cantidad += 1;
     }
 
-
-    // Algunos tests usan setPrecio(int) y getPrecio() float
-
-    public void setPrecio(int valor) {
-
-        this.precioUnitario = BigDecimal.valueOf(valor);
-
+    public void reducir() {
+        if (this.cantidad <= 1) {
+            throw new IllegalStateException("No se puede reducir por debajo de 1 (considera eliminar).");
+        }
+        this.cantidad -= 1;
     }
-
-
-    public float getPrecio() {
-
-        return precioUnitario != null ? precioUnitario.floatValue() : 0f;
-
-    }
-
-
-    // Peso opcional para la UI (si lo tienes):
-    private float peso;
-
-    public float getPeso() { return peso; }
-
-    public void setPeso(float p) { this.peso = Math.max(0f, p); }
-
 
     public BigDecimal getSubtotal() {
-
-        if (precioUnitario == null) return BigDecimal.ZERO;
-
-        return precioUnitario.multiply(BigDecimal.valueOf(Math.max(0, cantidad)));
-
+        return precioUnitario.multiply(BigDecimal.valueOf(cantidad));
     }
-    public float calcularSubtotal() {
-        return precio * peso;
+
+    /* ========= Getters/Setters ========= */
+
+    public Long getId() {
+        return id;
+    }
+
+    public Pedido getPedido() {
+        return pedido;
+    }
+
+    public void setPedido(Pedido pedido) {
+        this.pedido = pedido;
+    }
+
+    public Producto getProducto() {
+        return producto;
+    }
+
+    public void setProducto(Producto producto) {
+        this.producto = producto;
+    }
+
+    public int getCantidad() {
+        return cantidad;
+    }
+
+    public void setCantidad(int cantidad) {
+        if (cantidad <= 0)
+            throw new IllegalArgumentException("La cantidad debe ser > 0");
+        this.cantidad = cantidad;
+    }
+
+    public BigDecimal getPrecioUnitario() {
+        return precioUnitario;
+    }
+
+    public void setPrecioUnitario(BigDecimal precioUnitario) {
+        this.precioUnitario = precioUnitario;
+    }
+
+    /* ========= equals/hashCode por id ========= */
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o)
+            return true;
+        if (!(o instanceof ProductoPedido that))
+            return false;
+        return id != null && id.equals(that.id);
+    }
+
+    @Override
+    public int hashCode() {
+        return 31;
+    }
+
+    @Override
+    public String toString() {
+        return "ProductoPedido{id=%d, producto=%s, cantidad=%d, precio=%s}"
+                .formatted(id, producto != null ? producto.getNombre() : "?", cantidad, precioUnitario);
     }
 }

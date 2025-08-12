@@ -16,7 +16,7 @@ public class TestConfig {
     @Bean
     @Primary
     public VentanaPrincipal ventanaPrincipal() {
-        return new VentanaPrincipal();
+        return new VentanaPrincipal(null);
     }
 
-} 
+}
