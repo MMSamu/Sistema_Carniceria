@@ -8,13 +8,22 @@ import javafx.scene.control.Alert;
 import javafx.stage.Stage;
 import lombok.Getter;
 import mx.uam.ayd.proyecto.presentacion.checklist.ControlChecklist;
+import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Component;
+
 
 import java.io.IOException;
 import java.net.URL;
 
 @Component
 public class VentanaPrincipal {
+
+	private final ApplicationContext applicationContext;
+
+	public VentanaPrincipal(ApplicationContext applicationContext) { // <-- NUEVO constructor con Spring
+		this.applicationContext = applicationContext;
+	}
+
 
 	@Getter
 	private Stage stage;
@@ -41,7 +50,8 @@ public class VentanaPrincipal {
 			}
 
 			FXMLLoader loader = new FXMLLoader(fxml);
-			loader.setController(this);
+			//loader.setController(this);
+			loader.setControllerFactory(applicationContext::getBean);
 			Scene scene = new Scene(loader.load(), 600, 400);
 
 			stage = new Stage();
@@ -101,12 +111,23 @@ public class VentanaPrincipal {
 		});
 	}
 
+
+
 	@FXML
 	private void onChecklist() {
 		if (control != null) {
 			control.iniciaChecklistCompra();
 		} else {
 			mostrarError("No se pudo abrir el checklist (control no inicializado).");
+		}
+	}
+
+	@FXML
+	private void onAbrirPago() {
+		if (control != null) {
+			control.iniciaPago(); // abrirá la ventana de pago (otro Stage)
+		} else {
+			mostrarError("El ControlPrincipal no está disponible.");
 		}
 	}
 

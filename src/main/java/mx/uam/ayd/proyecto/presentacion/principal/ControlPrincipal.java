@@ -5,6 +5,7 @@
 	import mx.uam.ayd.proyecto.negocio.PedidoService;
 	import mx.uam.ayd.proyecto.negocio.modelo.ProductoPedido;
 	import mx.uam.ayd.proyecto.presentacion.checklist.VentanaChecklist;
+	import mx.uam.ayd.proyecto.presentacion.pago.VentanaPago;
 	import mx.uam.ayd.proyecto.presentacion.seleccionMetodoEntrega.ControlMetodoEntrega;
 	import mx.uam.ayd.proyecto.presentacion.seleccionMetodoEntrega.VentanaMetodoEntrega;
 	import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,7 @@
 	import java.math.BigDecimal;
 	import java.util.List;
 	import java.util.Optional;
+
 
 	/**
 	 * Lleva el flujo de control de la ventana principal.
@@ -25,14 +27,17 @@
 
 		private final VentanaPrincipal ventana;
 		private final PedidoService pedidoService; // servicio de negocio
-private  final CheckoutService checkoutService; // servicio de negocio para checklist
+		private  final CheckoutService checkoutService; // servicio de negocio para checklist
+		private final VentanaPago ventanaPago;
+
 		@Autowired
 		public ControlPrincipal(VentanaPrincipal ventana,
-                                PedidoService pedidoService, CheckoutService checkoutService) {
+								PedidoService pedidoService, CheckoutService checkoutService,  VentanaPago ventanaPago) {
 			this.ventana = ventana;
 			this.pedidoService = pedidoService;
-            this.checkoutService = checkoutService;
-        }
+			this.checkoutService = checkoutService;
+			this.ventanaPago = ventanaPago;
+		}
 
 		/** Conexión bidireccional ventana <-> control */
 		@PostConstruct
@@ -43,6 +48,7 @@ private  final CheckoutService checkoutService; // servicio de negocio para chec
 
 		/** Arranca la UI principal */
 		public void inicia() {
+
 			ventana.muestra();
 		}
 
@@ -114,5 +120,27 @@ private  final CheckoutService checkoutService; // servicio de negocio para chec
 			} catch (Exception e) {
 				ventana.mostrarError("No se pudo abrir el checklist (" + e.getMessage() + ")");
 			}
+
+		}
+
+		public void iniciaPago() {
+			// Si ya tienes pedido actual, calcula totales reales; si no, usa demo
+			Long idPedidoActual = ventana.getPedidoIdActual();
+			double subtotal = 200.00;
+			double total = 200.00;
+
+			try {
+				if (idPedidoActual != null) {
+					List<ProductoPedido> items = checkoutService.obtenerProductosDelPedido(idPedidoActual);
+					String tipoEntrega = checkoutService.obtenerTipoEntregaDelPedido(idPedidoActual);
+					BigDecimal sub = checkoutService.calcularSubtotal(items);
+					BigDecimal env = checkoutService.calcularEnvio(tipoEntrega);
+					BigDecimal tot = checkoutService.calcularTotal(sub, env);
+					subtotal = sub.doubleValue();
+					total = tot.doubleValue();
+				}
+			} catch (Exception ignore) { /* si falla, abrimos con demo */ }
+
+			ventanaPago.mostrar(subtotal, total); // <- abre ventana-pago.fxml
 		}
 	}
