@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox xmlns="http://javafx.com/javafx/21" xmlns:fx="http://javafx.com/fxml/1"
+
+      fx:controller="mx.uam.ayd.proyecto.presentacion.pago.ControlPago"
+      spacing="12" prefWidth="520">
+    <fx:define>
+        <ToggleGroup fx:id="grupoPago"/>
+    </fx:define>
+
+    <padding><Insets top="16" right="16" bottom="16" left="16"/></padding>
+
+    <Label text="Contacto"/>
+    <VBox spacing="6">
+        <Label text="Número de teléfono o móvil"/>
+        <TextField fx:id="txtTelefono" promptText="Número de teléfono o móvil"/>
+    </VBox>
+
+    <Label text="Recogida en tienda"/>
+    <GridPane hgap="12" vgap="6">
+        <columnConstraints>
+            <ColumnConstraints percentWidth="50"/>
+            <ColumnConstraints percentWidth="50"/>
+        </columnConstraints>
+
+        <Label text="Nombre" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+        <TextField fx:id="txtNombre" promptText="Nombre" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+
+        <Label text="Apellido" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+        <TextField fx:id="txtApellido" promptText="Apellido" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+    </GridPane>
+
+    <VBox spacing="6">
+        <Label text="Número de productos a adquirir"/>
+        <TextField fx:id="txtNumProductos" promptText="Número de productos a adquirir"/>
+    </VBox>
+
+    <Label text="*Es obligatorio traer una identificación oficial que coincida con los datos del comprador"
+           wrapText="true"/>
+
+    <Label text="Pago"/>
+    <VBox spacing="8">
+        <RadioButton fx:id="rbEfectivo" text="Efectivo" toggleGroup="$grupoPago" selected="true"/>
+        <RadioButton fx:id="rbTransferencia" text="Transferencia" toggleGroup="$grupoPago"/>
+    </VBox>
+
+    <Label text="Resumen del pedido"/>
+    <VBox spacing="4">
+        <Label fx:id="lblSubtotal" text="Subtotal: $0.00"/>
+        <Label fx:id="lblTotal" text="Total: $0.00"/>
+    </VBox>
+
+    <Button text="Finalizar el pedido" onAction="#onFinalizarPedido"/>
+</VBox>
+
+
+

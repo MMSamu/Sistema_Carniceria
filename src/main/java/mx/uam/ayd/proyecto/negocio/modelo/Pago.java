@@ -23,12 +23,23 @@ public class Pago {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long idPago;
 
-    private String tipoPago; // "Efectivo", "Tarjeta"
-    private float monto;
-    private LocalDate fechaPago;
-    private String estado; // "Pendiente", "Confirmado"
 
-    @ManyToOne
+    @Column(length = 20, nullable = false)
+    private String tipoPago; // "Efectivo", "Tarjeta"
+
+    @Column(nullable = false)
+    private float monto;
+
+
+    private LocalDate fechaPago = LocalDate.now();
+
+    @Column(length = 20)
+    private String estado = "Pendiente"; // "Pendiente" , "Confirmado"
+
+
+    // --- Relación dueño: muchos pagos pertenecen a un cliente
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "cliente_id", nullable = false)
     private Cliente cliente; //
 
     /**

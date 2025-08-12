@@ -8,6 +8,7 @@
 
 <VBox xmlns="http://javafx.com/javafx"
       xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="mx.uam.ayd.proyecto.presentacion.principal.VentanaPrincipal"
       spacing="10" style="-fx-padding: 15px;">
 
     <Label text="Mi Aplicación (Spring Managed)"
@@ -20,7 +21,7 @@
         <Button text="Revisar pedido (checklist)"
                 onAction="#onChecklist"/>
 
-        <Button text="Finalizar pedido" onAction="#onFinalizarPedido"/>
+        <Button text="Abrir pago" onAction="#onAbrirPago"/>
 
     </HBox>
 
