@@ -111,6 +111,21 @@ public class VentanaPrincipal {
 		});
 	}
 
+	@FXML
+	private void onAbrirCatalogo() {
+		try {
+			FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/catalogo.fxml"));
+			loader.setControllerFactory(applicationContext::getBean); // ControlCatalogo @Component
+			Scene scene = new Scene(loader.load());
+			Stage s = new Stage();
+			s.setTitle("Catálogo");
+			s.setScene(scene);
+			s.show();
+		} catch (Exception e) {
+			e.printStackTrace();
+			mostrarError("No se pudo abrir el catálogo: " + e.getMessage());
+		}
+	}
 
 
 	@FXML

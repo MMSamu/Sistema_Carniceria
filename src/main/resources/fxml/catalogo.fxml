@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<BorderPane xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="mx.uam.ayd.proyecto.presentacion.catalogo.ControlCatalogo"
+            prefWidth="900.0" prefHeight="560.0">
+
+    <top>
+        <HBox spacing="10.0">
+            <padding>
+                <Insets top="10.0" right="10.0" bottom="10.0" left="10.0"/>
+            </padding>
+
+            <TextField fx:id="txtBusqueda" promptText="Buscar producto..." HBox.hgrow="ALWAYS"/>
+            <ComboBox fx:id="cmbTipoCorte" promptText="Tipo de corte" prefWidth="180.0"/>
+            <CheckBox fx:id="chkMenudeo" text="Menudeo"/>
+            <CheckBox fx:id="chkCongelado" text="Congelado"/>
+            <Button text="Filtrar" onAction="#onFiltrar"/>
+        </HBox>
+    </top>
+
+    <center>
+        <TableView fx:id="tblProductos">
+            <columns>
+                <TableColumn fx:id="colNombre" text="Nombre" prefWidth="300.0"/>
+                <TableColumn fx:id="colPrecio" text="Precio" prefWidth="120.0"/>
+                <TableColumn fx:id="colDisponibilidad" text="Disp." prefWidth="90.0"/>
+                <TableColumn fx:id="colOferta" text="Oferta" prefWidth="90.0"/>
+            </columns>
+        </TableView>
+    </center>
+
+    <bottom>
+        <HBox spacing="10.0">
+            <padding>
+                <Insets top="10.0" right="10.0" bottom="10.0" left="10.0"/>
+            </padding>
+            <Region HBox.hgrow="ALWAYS"/>
+            <Button text="Cerrar" onAction="#onCerrar"/>
+        </HBox>
+    </bottom>
+</BorderPane>
