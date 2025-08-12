@@ -139,4 +139,13 @@ public class VentanaPrincipal {
 			mostrarError("El ControlPrincipal no está disponible.");
 		}
 	}
+
+	@FXML
+	private void onAbrirCatalogo() {
+		if (control != null) {
+			control.iniciaCatalogo(); // lo creamos abajo
+		} else {
+			mostrarError("El ControlPrincipal no está disponible.");
+		}
+	}
 }

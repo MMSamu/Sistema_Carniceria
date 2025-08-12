@@ -18,12 +18,9 @@
         <Button text="Revisar pedido (checklist)" onAction="#onChecklist"/>
         <Button text="Abrir catálogo" onAction="#onAbrirCatalogo"/>
         <Button text="Abrir pago" onAction="#onAbrirPago"/>
-<<<<<<< HEAD
-
-     <Button text="Editar carrito" onAction="#editarCarrito"
-        style="-fx-min-width: 200px; -fx-min-height: 30px;"/>
-=======
->>>>>>> 37e96921ffa7b4f11d2f3e8114079744690c8448
+        <Button text="Editar carrito" onAction="#editarCarrito"
+                style="-fx-min-width: 90px; -fx-min-height: 30px;"/>
+                
     </HBox>
 
 </VBox>

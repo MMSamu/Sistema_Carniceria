@@ -150,4 +150,9 @@ public class ControlPrincipal {
 	public void editarcarrito() {
 		controlCarrito.inicia();
 	}
+
+	public void iniciaCatalogo() {
+		// TODO: aquí abre tu FXML real del catálogo si ya lo tienes
+		ventana.mostrarInfo("Catálogo: pendiente de integrar.");
+	}
 }

@@ -4,6 +4,15 @@ import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.util.Objects;
 
+import lombok.RequiredArgsConstructor;
+import mx.uam.ayd.proyecto.datos.ProductoPedidoRepository;
+import mx.uam.ayd.proyecto.negocio.modelo.ProductoPedido;
+import org.springframework.stereotype.Service;
+
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+
 @Entity
 @Table(name = "producto_pedido")
 public class ProductoPedido {
@@ -121,5 +130,20 @@ public class ProductoPedido {
     public String toString() {
         return "ProductoPedido{id=%d, producto=%s, cantidad=%d, precio=%s}"
                 .formatted(id, producto != null ? producto.getNombre() : "?", cantidad, precioUnitario);
+    }
+
+    public Object getNombre() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getNombre'");
+    }
+
+    public float getPeso() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getPeso'");
+    }
+
+    public float getPrecio() {
+        // TODO Auto-generated method stub
+        throw new UnsupportedOperationException("Unimplemented method 'getPrecio'");
     }
 }
