@@ -1,7 +1,6 @@
 package mx.uam.ayd.proyecto.negocio;
 import lombok.RequiredArgsConstructor;
 import mx.uam.ayd.proyecto.datos.PedidoRepository;
-import mx.uam.ayd.proyecto.negocio.modelo.Notificacion;
 import mx.uam.ayd.proyecto.negocio.modelo.Notificacion.EstadoPedido;
 import mx.uam.ayd.proyecto.negocio.modelo.Pedido;
 import org.springframework.stereotype.Service;

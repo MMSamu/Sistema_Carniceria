@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.HBox?>
@@ -15,18 +14,16 @@
            style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
 
     <HBox spacing="10" alignment="CENTER_LEFT">
-        <Button text="Seleccionar método de entrega"
-                onAction="#onSeleccionMetodoEntrega"/>
-
-        <Button text="Revisar pedido (checklist)"
-                onAction="#onChecklist"/>
-
+        <Button text="Seleccionar método de entrega" onAction="#onSeleccionMetodoEntrega"/>
+        <Button text="Revisar pedido (checklist)" onAction="#onChecklist"/>
+        <Button text="Abrir catálogo" onAction="#onAbrirCatalogo"/>
         <Button text="Abrir pago" onAction="#onAbrirPago"/>
+<<<<<<< HEAD
 
      <Button text="Editar carrito" onAction="#editarCarrito"
         style="-fx-min-width: 200px; -fx-min-height: 30px;"/>
+=======
+>>>>>>> 37e96921ffa7b4f11d2f3e8114079744690c8448
     </HBox>
-
-
 
 </VBox>
