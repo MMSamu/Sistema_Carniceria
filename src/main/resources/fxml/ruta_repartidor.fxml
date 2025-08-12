@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<DialogPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="mx.uam.ayd.proyecto.presentacion.rutaRepartidor.ControlRutaRepartidor">
+    <content>
+        <VBox spacing="10">
+            <Label text="Ruta de entregas del repartidor" style="-fx-font-size:16px; -fx-font-weight:bold;"/>
+
+            <TableView fx:id="tablaPedidos" prefHeight="300">
+                <columns>
+                    <TableColumn fx:id="colId"        text="Pedido"    prefWidth="100"/>
+                    <TableColumn fx:id="colTipo"      text="Entrega"   prefWidth="140"/>
+                    <TableColumn fx:id="colItems"     text="Items"     prefWidth="80"/>
+                    <TableColumn fx:id="colTotal"     text="Total"     prefWidth="120"/>
+                </columns>
+            </TableView>
+
+            <HBox spacing="10">
+                <Button text="Actualizar"   onAction="#onActualizar"/>
+                <Button text="Ver detalle"   onAction="#onVerDetalle"/>
+                <Button text="Cerrar"        onAction="#onCerrar"/>
+            </HBox>
+
+            <Label fx:id="lblInfo" style="-fx-text-fill: #555;"/>
+        </VBox>
+    </content>
+    <buttonTypes>
+        <ButtonType text="Cerrar" />
+    </buttonTypes>
+</DialogPane>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<DialogPane xmlns="http://javafx.com/javafx" xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="mx.uam.ayd.proyecto.presentacion.checklist.ControlChecklist">
+    <content>
+        <VBox spacing="10">
+            <Label text="Revisión del pedido" style="-fx-font-size:16px; -fx-font-weight:bold;"/>
+
+            <TableView fx:id="tablaItems" prefHeight="260">
+                <columns>
+                    <TableColumn fx:id="colNombre" text="Producto" prefWidth="220"/>
+                    <TableColumn fx:id="colCantidad" text="Cant." prefWidth="70"/>
+                    <TableColumn fx:id="colPrecio" text="Precio" prefWidth="100"/>
+                    <TableColumn fx:id="colSubtotal" text="Subtotal" prefWidth="120"/>
+                </columns>
+            </TableView>
+
+            <HBox spacing="18">
+                <Label text="Método de entrega:"/>
+                <Label fx:id="lblMetodoEntrega" style="-fx-font-weight: bold;"/>
+            </HBox>
+
+            <GridPane hgap="12" vgap="6">
+                <Label text="Subtotal:" GridPane.columnIndex="0" GridPane.rowIndex="0"/>
+                <Label fx:id="lblSubtotal" GridPane.columnIndex="1" GridPane.rowIndex="0"/>
+                <Label text="Envío:" GridPane.columnIndex="0" GridPane.rowIndex="1"/>
+                <Label fx:id="lblEnvio" GridPane.columnIndex="1" GridPane.rowIndex="1"/>
+                <Label text="TOTAL:" style="-fx-font-weight:bold;" GridPane.columnIndex="0" GridPane.rowIndex="2"/>
+                <Label fx:id="lblTotal" style="-fx-font-weight:bold;" GridPane.columnIndex="1" GridPane.rowIndex="2"/>
+            </GridPane>
+        </VBox>
+    </content>
+    <buttonTypes>
+        <ButtonType text="Editar" fx:id="btnEditar" />
+        <ButtonType text="Confirmar y pagar" fx:id="btnConfirmar" />
+        <ButtonType text="Cancelar" fx:id="btnCancelar" cancelButton="true"/>
+    </buttonTypes>
+</DialogPane>
