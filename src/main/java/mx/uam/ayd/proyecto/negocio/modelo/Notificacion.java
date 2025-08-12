@@ -8,69 +8,78 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 
 /**
- * Entidad unificada para HU-05 (auditoría de envío) y HU-10 (notificaciones de estado de pedido).
+ * Entidad que representa una notificación enviada al cliente o al sistema.
+ *
+ * Está diseñada para cubrir:
+ * - HU-05: Auditoría de envío de mensajes (registro de canal, estado, destino, etc.).
+ * - HU-10: Notificaciones de estado del pedido (confirmación, preparación, entrega, etc.).
+ *
+ * Usa anotaciones JPA para persistencia y Lombok para generar getters, setters y constructor vacío.
  */
-@Entity
-@Getter @Setter @NoArgsConstructor
+@Entity // Marca la clase como una entidad de persistencia JPA
+@Getter @Setter @NoArgsConstructor // Lombok: genera getters, setters y constructor sin argumentos
 public class Notificacion {
 
     /* ======================== Campos existentes (HU-05) ======================== */
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Id // Indica que este campo es la clave primaria
+    @GeneratedValue(strategy = GenerationType.IDENTITY) // Valor autoincremental generado por la BD
+    private Long id; // Identificador único de la notificación
 
     @Column(nullable = false)
-    private Long idPedido; // referencia al pedido
+    private Long idPedido; // Referencia al pedido asociado a la notificación
 
-    // Reemplazamos el String por un enum más seguro.
-    // @Column(nullable = false)
-    // private String canal; // "WHATSAPP" o "SMS"
-
-    @Enumerated(EnumType.STRING)
+    // Canal de envío, reemplazando un String por un enum para mayor seguridad
+    @Enumerated(EnumType.STRING) // Guarda el nombre del enum en la BD como texto
     @Column(nullable = false, length = 12)
-    private Canal canal = Canal.WHATSAPP; // default
+    private Canal canal = Canal.WHATSAPP; // Canal de envío (por defecto WhatsApp)
 
     @Column(nullable = false, length = 20)
-    private String telefonoDestino;
+    private String telefonoDestino; // Número de teléfono del destinatario
 
     @Column(nullable = false, length = 30)
-    private String estadoEnvio; // "CONFIRMADO" / "FALLO" (simulado)
+    private String estadoEnvio; // Estado del envío ("CONFIRMADO", "FALLO", etc.)
 
     @Column(nullable = false, length = 200)
-    private String mensaje;
+    private String mensaje; // Contenido del mensaje enviado
 
     @Column(nullable = false)
-    private LocalDateTime fechaHora = LocalDateTime.now();
+    private LocalDateTime fechaHora = LocalDateTime.now(); // Fecha y hora en que se generó la notificación
 
     /* ======================== Campos añadidos (HU-10) ======================== */
 
-    // Qué tipo de notificación es (permite usar la misma entidad para pagos, estado de pedido, etc.)
+    // Tipo de notificación (permite manejar diferentes categorías con una sola entidad)
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private TipoNotificacion tipo = TipoNotificacion.ESTADO_PEDIDO;
+    private TipoNotificacion tipo = TipoNotificacion.ESTADO_PEDIDO; // Por defecto, notificación de estado de pedido
 
-    // Solo aplica cuando tipo == ESTADO_PEDIDO.
+    // Estado del pedido (solo aplica si tipo == ESTADO_PEDIDO)
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
-    private EstadoPedido estadoPedido; // CONFIRMADO, PREPARADO, EN_RUTA, ENTREGADO
+    private EstadoPedido estadoPedido; // Ej.: CONFIRMADO, PREPARADO, EN_RUTA, ENTREGADO
 
-    // Para que la UI sepa si ya se mostró/leyó (campanita, badges, etc.)
+    // Indica si la notificación ya fue visualizada o marcada como leída por el usuario
     @Column(nullable = false)
     private boolean leida = false;
 
     /* ======================== Enums de apoyo ======================== */
 
+    /**
+     * Enum que define los canales posibles para enviar notificaciones.
+     */
     public enum Canal { SMS, WHATSAPP }
 
+    /**
+     * Enum que define los tipos de notificación que puede manejar el sistema.
+     */
     public enum TipoNotificacion {
-        ESTADO_PEDIDO,   // HU-10
-        PAGO,            //
-        OTRO
+        ESTADO_PEDIDO,   // Estado del pedido (HU-10)
+        PAGO,            // Notificaciones relacionadas con pagos
+        OTRO             // Otros tipos no clasificados
     }
 
     /**
-     * Estados clave del pedido para HU-10.
+     * Enum que define los estados clave que puede tener un pedido (HU-10).
      */
     public enum EstadoPedido { CONFIRMADO, PREPARADO, EN_RUTA, ENTREGADO }
 }

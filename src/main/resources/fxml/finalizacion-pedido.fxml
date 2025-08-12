@@ -10,7 +10,7 @@
       spacing="10" style="-fx-padding: 15px;">
 
 
-<Label text="¡Pedido finalizado!" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
+    <Label text="¡Pedido finalizado!" style="-fx-font-size: 18px; -fx-font-weight: bold;"/>
 
     <Label fx:id="lblIdPedido"    text="Pedido: --"/>
     <Label fx:id="lblEstado"      text="Estado: --"/>

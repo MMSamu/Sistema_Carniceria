@@ -32,8 +32,8 @@ public class ControlPrincipal {
 
 	@Autowired
 	public ControlPrincipal(VentanaPrincipal ventana,
-			PedidoService pedidoService, CheckoutService checkoutService, VentanaPago ventanaPago,
-			ControlCarrito controlCarrito) {
+							PedidoService pedidoService, CheckoutService checkoutService, VentanaPago ventanaPago,
+							ControlCarrito controlCarrito) {
 		this.ventana = ventana;
 		this.pedidoService = pedidoService;
 		this.checkoutService = checkoutService;

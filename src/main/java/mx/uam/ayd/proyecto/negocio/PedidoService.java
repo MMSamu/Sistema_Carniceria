@@ -1,4 +1,5 @@
 package mx.uam.ayd.proyecto.negocio;
+
 import lombok.RequiredArgsConstructor;
 import mx.uam.ayd.proyecto.datos.PedidoRepository;
 import mx.uam.ayd.proyecto.negocio.modelo.Notificacion.EstadoPedido;
@@ -10,99 +11,139 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.NoSuchElementException;
 
+/**
+ * Servicio de negocio para gestionar la lógica relacionada con los pedidos.
+ *
+ * Funcionalidades incluidas:
+ * - Actualización del estado de un pedido y registro de notificaciones (HU-10).
+ * - Asignación de métodos de entrega (HU-03).
+ * - Listado y consulta de pedidos en proceso (HU-12).
+ * - Transiciones de estado para control de flujo de preparación y entrega.
+ */
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor // Genera constructor con los campos final requeridos (inyección de dependencias)
 public class PedidoService {
 
-    private final PedidoRepository pedidoRepository;
-    private final NotificacionService servicioNotificacion;
+    private final PedidoRepository pedidoRepository; // Repositorio para acceso a datos de pedidos
+    private final NotificacionService servicioNotificacion; // Servicio para manejar notificaciones (HU-10)
 
+    /**
+     * Actualiza el estado de un pedido y opcionalmente envía una notificación.
+     *
+     * @param idPedido    ID del pedido a actualizar.
+     * @param nuevoEstado Nuevo estado que se asignará.
+     * @return El pedido actualizado y persistido.
+     */
     @Transactional
     public Pedido actualizarEstado(Long idPedido, EstadoPedido nuevoEstado) {
+        // Buscar el pedido o lanzar excepción si no existe
         Pedido ped = pedidoRepository.findById(idPedido)
                 .orElseThrow(() -> new IllegalArgumentException("Pedido no encontrado: " + idPedido));
 
+        // Asignar el nuevo estado como cadena (compatibilidad con el modelo actual)
         ped.setEstado(String.valueOf(nuevoEstado));
 
-        // (Opcional) tomar teléfono real del pedido/cliente
+        // (Opcional) Usar teléfono real del pedido; si no existe, usar un valor por defecto
         String telefono = ped.getTelefonoContacto() != null ? ped.getTelefonoContacto() : "5555555555";
 
+        // Guardar cambios en BD
         Pedido guardado = pedidoRepository.save(ped);
 
-       /* servicioNotificacion.notificarEstadoPedido(
+        // Enviar notificación (comentado por ahora)
+        /*
+        servicioNotificacion.notificarEstadoPedido(
                 guardado.getIdPedido(),
                 nuevoEstado,
                 Notificacion.Canal.WHATSAPP,
                 telefono
-        );*/
+        );
+        */
 
         return guardado;
     }
 
-    // Métodos atajo para estados importantes
+    /* ==== Métodos de atajo para estados clave (HU-10) ==== */
+
     @Transactional public void marcarConfirmado(Long idPedido){ actualizarEstado(idPedido, EstadoPedido.CONFIRMADO); }
     @Transactional public void marcarPreparado (Long idPedido){ actualizarEstado(idPedido, EstadoPedido.PREPARADO); }
     @Transactional public void marcarEnRuta   (Long idPedido){ actualizarEstado(idPedido, EstadoPedido.EN_RUTA); }
     @Transactional public void marcarEntregado(Long idPedido){ actualizarEstado(idPedido, EstadoPedido.ENTREGADO); }
+
+    /**
+     * Lista los métodos de entrega disponibles en el sistema (HU-03).
+     *
+     * @return Lista de métodos de entrega soportados.
+     */
     public List<String> listarMetodosEntrega() {
-
         return List.of("A domicilio", "En tienda", "Recoger en mostrador");
-
     }
+
+    /**
+     * Asigna un método de entrega a un pedido si aún no se ha establecido.
+     *
+     * @param idPedido ID del pedido.
+     * @param metodo   Método de entrega a asignar.
+     * @return Pedido actualizado con el método asignado.
+     */
     public Pedido asignarMetodoEntrega(Long idPedido, String metodo) {
-
-        // 1) Buscar el pedido o fallar si no existe.
-
+        // 1) Buscar el pedido o lanzar excepción si no existe
         Pedido pedido = pedidoRepository.findById(idPedido)
-
                 .orElseThrow(() -> new NoSuchElementException("Pedido no encontrado: " + idPedido));
 
-        // 2) Validar entrada (null/blank) y pertenencia al catálogo soportado.
-
+        // 2) Validar que el método no sea nulo/vacío
         if (metodo == null || metodo.isBlank()) {
-
             throw new IllegalArgumentException("El método de entrega no puede estar vacío");
-
         }
 
+        // Validar que el método esté en el catálogo soportado
         List<String> soportados = listarMetodosEntrega();
-
         if (!soportados.contains(metodo)) {
-
             throw new IllegalArgumentException("Método de entrega inválido: " + metodo
-
                     + ". Válidos: " + String.join(", ", soportados));
-
         }
 
-        // 3) Evitar reasignación si ya fue seteado previamente.
-
+        // 3) Evitar reasignación si ya existe un método de entrega asignado
         if (pedido.getTipoEntrega() != null && !pedido.getTipoEntrega().isBlank()) {
-
             throw new IllegalStateException("El pedido ya tiene método de entrega: " + pedido.getTipoEntrega());
-
         }
 
-        // 4) Asignar y persistir.
-
+        // 4) Asignar y guardar cambios
         pedido.setTipoEntrega(metodo);
-
         return pedidoRepository.save(pedido);
-
     }
-    // HU-12: listar/consultar
+
+    /* ==== HU-12: Listado y consulta de pedidos ==== */
+
+    /**
+     * Obtiene todos los pedidos con estado "en proceso" ordenados por hora de creación.
+     *
+     * @return Lista de pedidos en proceso ordenados.
+     */
     @Transactional(readOnly = true)
     public List<Pedido> obtenerPedidosEnProcesoOrdenados() {
-        // asegurse de que en la BD el valor sea "en proceso" (misma convención).
+        // Asegurarse que el valor en BD sea "en proceso" con misma convención
         return pedidoRepository.findByEstadoOrderByHoraAsc("en proceso");
     }
+
+    /**
+     * Obtiene el detalle completo de un pedido por su ID.
+     *
+     * @param idPedido ID del pedido.
+     * @return El pedido correspondiente.
+     */
     @Transactional(readOnly = true)
     public Pedido obtenerDetallesPedido(long idPedido) {
         return pedidoRepository.findById(idPedido)
                 .orElseThrow(() -> new IllegalArgumentException("Pedido no encontrado: " + idPedido));
     }
 
-    // HU-12: transiciones de estado
+    /* ==== HU-12: Transiciones de estado ==== */
+
+    /**
+     * Marca un pedido como "pedido listo" y registra la hora del cambio.
+     *
+     * @param idPedido ID del pedido.
+     */
     @Transactional
     public void marcarPedidoListo(long idPedido) {
         Pedido p = obtenerDetallesPedido(idPedido);
@@ -114,7 +155,11 @@ public class PedidoService {
         pedidoRepository.save(p);
     }
 
-
+    /**
+     * Marca un pedido como "listo para entregar" y registra la hora del cambio.
+     *
+     * @param idPedido ID del pedido.
+     */
     @Transactional
     public void marcarListoParaEntregar(long idPedido) {
         Pedido p = obtenerDetallesPedido(idPedido);
