@@ -13,7 +13,7 @@ import java.util.List;
  */
 public interface NotificacionRepository extends JpaRepository<Notificacion, Long> {
 
-    // Todas las notificaciones de un pedido (más recientes primero)
+    // Todas las notificaciones de un pedido primero las mas recientes.
     List<Notificacion> findByIdPedidoOrderByFechaHoraDesc(Long idPedido);
 
     // Solo las de HU-10 (estado del pedido)

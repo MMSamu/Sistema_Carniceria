@@ -23,7 +23,7 @@ public class Notificacion {
     @Column(nullable = false)
     private Long idPedido; // referencia al pedido
 
-    // Reemplazamos el String por un enum más seguro (ver abajo). Si ya tienes datos, mantén el String y añade el enum.
+    // Reemplazamos el String por un enum más seguro.
     // @Column(nullable = false)
     // private String canal; // "WHATSAPP" o "SMS"
 
