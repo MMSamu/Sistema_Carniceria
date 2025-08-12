@@ -13,9 +13,11 @@ import java.util.List;
 
 @Entity
 @Table(name = "pedidos")
-@Getter @Setter @NoArgsConstructor
+@Getter
+@Setter
+@NoArgsConstructor
 public class Pedido {
-
+    public static final String ESTADO_ENTREGADO = "entregado";
     // identificador
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,10 +31,10 @@ public class Pedido {
     private LocalTime hora = LocalTime.now();
 
     // HU-06: entrega y pago
-    @Column(nullable = false, length = 20)       // "domicilio" | "tienda"
+    @Column(nullable = false, length = 20) // "domicilio" | "tienda"
     private String tipoEntrega;
 
-    @Column(nullable = false, length = 20)       // "efectivo"  | "transferencia"
+    @Column(nullable = false, length = 20) // "efectivo" | "transferencia"
     private String metodoPago;
 
     // datos complementarios
@@ -40,23 +42,22 @@ public class Pedido {
     private BigDecimal total = BigDecimal.ZERO;
 
     @Column(length = 500)
-    private String observaciones;                 // notas especiales del cliente
+    private String observaciones; // notas especiales del cliente
 
     // HU-12: flujo de estado del pedido
-    @Column(nullable = false, length = 30)        // "en proceso" | "pedido listo" | "listo para entregar"
+    @Column(nullable = false, length = 30) // "en proceso" | "pedido listo" | "listo para entregar"
     private String estado = "en proceso";
 
-    private LocalDateTime timestampPedidoListo;       // se llena al pasar a "pedido listo"
+    private LocalDateTime timestampPedidoListo; // se llena al pasar a "pedido listo"
     private LocalDateTime timestampListoParaEntregar; // se llena al pasar a "listo para entregar"
+    private LocalDateTime timestampEntregado; // se llena al pasar a "Entregado"
 
     // imports/atributos/relaciones
-    @OneToMany(mappedBy = "pedido",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true,
-            fetch = FetchType.EAGER)
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<ProductoPedido> items = new java.util.ArrayList<>();
-private String telefonoContacto;  // opcional, para notificaciones
+    private String telefonoContacto; // opcional, para notificaciones
     // helpers
+
     public void addItem(ProductoPedido it) {
         it.setPedido(this);
         items.add(it);
@@ -64,12 +65,12 @@ private String telefonoContacto;  // opcional, para notificaciones
 
     public void removeItem(ProductoPedido it) {
         items.remove(it);
-        it.setPedido(null);      // rompe la FK para que 'orphanRemoval' funcione
+        it.setPedido(null); // rompe la FK para que 'orphanRemoval' funcione
     }
 
     @OneToOne
     @JoinColumn(name = "direccion_id")
-    private Direccion direccionEntrega;           // solo aplica si tipoEntrega = "domicilio"
+    private Direccion direccionEntrega; // solo aplica si tipoEntrega = "domicilio"
 
     public void marcarPedidoListo() {
         if (!"en proceso".equals(estado)) {
@@ -85,5 +86,14 @@ private String telefonoContacto;  // opcional, para notificaciones
         }
         estado = "listo para entregar";
         timestampListoParaEntregar = LocalDateTime.now();
+    }
+
+    /* ===== transición a ENTREGADO (HU-13) ===== */
+    public void marcarEntregado() {
+        if (!"ESTADO_LISTO_PARA_ENTREGAR".equals(estado)) {
+            throw new IllegalStateException("Sólo puede confirmarse entrega desde 'listo para entregar'.");
+        }
+        estado = ESTADO_ENTREGADO;
+        timestampEntregado = LocalDateTime.now();
     }
 }

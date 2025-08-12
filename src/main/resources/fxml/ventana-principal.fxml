@@ -20,6 +20,8 @@
         <Button text="Abrir pago" onAction="#onAbrirPago"/>
         <Button text="Editar carrito" onAction="#editarCarrito"
                 style="-fx-min-width: 90px; -fx-min-height: 30px;"/>
+        <Button text="Confirmar pedido" onAction="#onConfirmarPedido" 
+        style="-fx-min-width: 140px; -fx-min-height: 30px;"/>
                 
     </HBox>
 

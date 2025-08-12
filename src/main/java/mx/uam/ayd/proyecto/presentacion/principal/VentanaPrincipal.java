@@ -148,4 +148,9 @@ public class VentanaPrincipal {
 			mostrarError("El ControlPrincipal no está disponible.");
 		}
 	}
+
+	@FXML
+	private void onConfirmarPedido() {
+		controlPrincipal.iniciarConfirmarPedido();
+	}
 }

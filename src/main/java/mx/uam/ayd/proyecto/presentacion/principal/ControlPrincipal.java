@@ -6,6 +6,7 @@ import mx.uam.ayd.proyecto.negocio.PedidoService;
 import mx.uam.ayd.proyecto.negocio.modelo.ProductoPedido;
 import mx.uam.ayd.proyecto.presentacion.checklist.VentanaChecklist;
 import mx.uam.ayd.proyecto.presentacion.editarCarrito.ControlCarrito;
+import mx.uam.ayd.proyecto.presentacion.confirmarEntrega.ControlconfirmarPedido;
 import mx.uam.ayd.proyecto.presentacion.pago.VentanaPago;
 import mx.uam.ayd.proyecto.presentacion.seleccionMetodoEntrega.ControlMetodoEntrega;
 import mx.uam.ayd.proyecto.presentacion.seleccionMetodoEntrega.VentanaMetodoEntrega;
@@ -29,6 +30,7 @@ public class ControlPrincipal {
 	private final CheckoutService checkoutService; // servicio de negocio para checklist
 	private final VentanaPago ventanaPago;
 	private final ControlCarrito controlCarrito;
+	private final ControlconfirmarPedido controlconfirmarPedido;
 
 	@Autowired
 	public ControlPrincipal(VentanaPrincipal ventana,
@@ -39,6 +41,7 @@ public class ControlPrincipal {
 		this.checkoutService = checkoutService;
 		this.ventanaPago = ventanaPago;
 		this.controlCarrito = controlCarrito;
+		this.controlconfirmarPedido = null;
 	}
 
 	/** Conexión bidireccional ventana <-> control */
@@ -154,5 +157,10 @@ public class ControlPrincipal {
 	public void iniciaCatalogo() {
 		// TODO: aquí abre tu FXML real del catálogo si ya lo tienes
 		ventana.mostrarInfo("Catálogo: pendiente de integrar.");
+	}
+
+	// === agregado para HU-13: Confirmar pedido/entrega ===
+	public void iniciarConfirmarPedido() {
+		controlconfirmarPedido.inicia();
 	}
 }

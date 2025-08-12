@@ -21,7 +21,8 @@ import java.util.NoSuchElementException;
  * - Transiciones de estado para control de flujo de preparación y entrega.
  */
 @Service
-@RequiredArgsConstructor // Genera constructor con los campos final requeridos (inyección de dependencias)
+@RequiredArgsConstructor // Genera constructor con los campos final requeridos (inyección de
+                         // dependencias)
 public class PedidoService {
 
     private final PedidoRepository pedidoRepository; // Repositorio para acceso a datos de pedidos
@@ -43,48 +44,50 @@ public class PedidoService {
         // Asignar el nuevo estado como cadena (compatibilidad con el modelo actual)
         ped.setEstado(String.valueOf(nuevoEstado));
 
-        // (Opcional) Usar teléfono real del pedido; si no existe, usar un valor por defecto
+        // (Opcional) Usar teléfono real del pedido; si no existe, usar un valor por
+        // defecto
         String telefono = ped.getTelefonoContacto() != null ? ped.getTelefonoContacto() : "5555555555";
 
         // Guardar cambios en BD
         Pedido guardado = pedidoRepository.save(ped);
 
-        // Enviar notificación (comentado por ahora)
         /*
-        servicioNotificacion.notificarEstadoPedido(
-                guardado.getIdPedido(),
-                nuevoEstado,
-                Notificacion.Canal.WHATSAPP,
-                telefono
-        );
-        */
+         * servicioNotificacion.notificarEstadoPedido(
+         * guardado.getIdPedido(),
+         * nuevoEstado,
+         * Notificacion.Canal.WHATSAPP,
+         * telefono
+         * );
+         */
 
         return guardado;
     }
 
-    /* ==== Métodos de atajo para estados clave (HU-10) ==== */
+    // Métodos atajo para estados importantes
+    @Transactional
+    public void marcarConfirmado(Long idPedido) {
+        actualizarEstado(idPedido, EstadoPedido.CONFIRMADO);
+    }
 
-    @Transactional public void marcarConfirmado(Long idPedido){ actualizarEstado(idPedido, EstadoPedido.CONFIRMADO); }
-    @Transactional public void marcarPreparado (Long idPedido){ actualizarEstado(idPedido, EstadoPedido.PREPARADO); }
-    @Transactional public void marcarEnRuta   (Long idPedido){ actualizarEstado(idPedido, EstadoPedido.EN_RUTA); }
-    @Transactional public void marcarEntregado(Long idPedido){ actualizarEstado(idPedido, EstadoPedido.ENTREGADO); }
+    @Transactional
+    public void marcarPreparado(Long idPedido) {
+        actualizarEstado(idPedido, EstadoPedido.PREPARADO);
+    }
 
-    /**
-     * Lista los métodos de entrega disponibles en el sistema (HU-03).
-     *
-     * @return Lista de métodos de entrega soportados.
-     */
+    @Transactional
+    public void marcarEnRuta(Long idPedido) {
+        actualizarEstado(idPedido, EstadoPedido.EN_RUTA);
+    }
+
+    @Transactional
+    public void marcarEntregado(Long idPedido) {
+        actualizarEstado(idPedido, EstadoPedido.ENTREGADO);
+    }
+
     public List<String> listarMetodosEntrega() {
         return List.of("A domicilio", "En tienda", "Recoger en mostrador");
     }
 
-    /**
-     * Asigna un método de entrega a un pedido si aún no se ha establecido.
-     *
-     * @param idPedido ID del pedido.
-     * @param metodo   Método de entrega a asignar.
-     * @return Pedido actualizado con el método asignado.
-     */
     public Pedido asignarMetodoEntrega(Long idPedido, String metodo) {
         // 1) Buscar el pedido o lanzar excepción si no existe
         Pedido pedido = pedidoRepository.findById(idPedido)
@@ -112,25 +115,13 @@ public class PedidoService {
         return pedidoRepository.save(pedido);
     }
 
-    /* ==== HU-12: Listado y consulta de pedidos ==== */
-
-    /**
-     * Obtiene todos los pedidos con estado "en proceso" ordenados por hora de creación.
-     *
-     * @return Lista de pedidos en proceso ordenados.
-     */
+    // HU-12: listar/consultar
     @Transactional(readOnly = true)
     public List<Pedido> obtenerPedidosEnProcesoOrdenados() {
         // Asegurarse que el valor en BD sea "en proceso" con misma convención
         return pedidoRepository.findByEstadoOrderByHoraAsc("en proceso");
     }
 
-    /**
-     * Obtiene el detalle completo de un pedido por su ID.
-     *
-     * @param idPedido ID del pedido.
-     * @return El pedido correspondiente.
-     */
     @Transactional(readOnly = true)
     public Pedido obtenerDetallesPedido(long idPedido) {
         return pedidoRepository.findById(idPedido)
@@ -155,11 +146,6 @@ public class PedidoService {
         pedidoRepository.save(p);
     }
 
-    /**
-     * Marca un pedido como "listo para entregar" y registra la hora del cambio.
-     *
-     * @param idPedido ID del pedido.
-     */
     @Transactional
     public void marcarListoParaEntregar(long idPedido) {
         Pedido p = obtenerDetallesPedido(idPedido);
@@ -168,6 +154,24 @@ public class PedidoService {
         }
         p.setEstado("listo para entregar");
         p.setTimestampListoParaEntregar(LocalDateTime.now());
+        pedidoRepository.save(p);
+    }
+
+    // HU-13: transiciones de estado (solo aplica a recepcionista)
+    @Transactional(readOnly = true)
+    public List<Pedido> listarListoParaEntregar() {
+        return pedidoRepository.findByEstadoOrderByHoraAsc("listo para entregar");
+    }
+
+    @Transactional
+    public void confirmarEntrega(long idPedido) {
+        Pedido p = obtenerDetallesPedido(idPedido);
+        if (!"listo para entregar".equalsIgnoreCase(p.getEstado())) {
+            throw new IllegalStateException(
+                    "Debe estar en 'listo para entregar' para confirmar la entrega.");
+        }
+        p.setEstado("entregado");
+        p.setTimestampEntregado(LocalDateTime.now()); // requiere el campo en Pedido
         pedidoRepository.save(p);
     }
 }
